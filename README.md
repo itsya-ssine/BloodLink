@@ -62,6 +62,9 @@ psql -U postgres -d bloodlink -f schema.sql
 # 1.1) Seed minimal startup data
 psql -U postgres -d bloodlink -f seed.sql
 
+# Optional: load the complete AppData dataset
+psql -U postgres -d bloodlink -f seed-all.sql
+
 # 2) Configure backend env
 cp backend/.env.example backend/.env
 
