@@ -24,9 +24,9 @@
   --radius-md:      14px;
   --radius-lg:      22px;
   --radius-xl:      32px;
-  --font-display:   'Playfair Display', Georgia, serif;
-  --font-body:      'DM Sans', sans-serif;
-  --font-mono:      'DM Mono', monospace;
+  --font-display:   'Manrope', 'Segoe UI', sans-serif;
+  --font-body:      'Manrope', 'Segoe UI', sans-serif;
+  --font-mono:      'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
   --shadow-card:    0 4px 32px rgba(0,0,0,0.5);
   --shadow-glow:    0 0 40px rgba(192,21,42,0.2);
 }
@@ -77,7 +77,7 @@ body {
 }
 
 .logo-text {
-  font-family: var(--font-display);
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 1.3rem;
   color: var(--text-primary);
   letter-spacing: -0.02em;
