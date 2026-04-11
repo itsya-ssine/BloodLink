@@ -9,6 +9,7 @@ A professional, fully-featured blood donation web application built with vanilla
 ```
 bloodlink/
 ├── index.html                  # Main entry point (SPA shell)
+├── schema.sql                  # PostgreSQL schema
 ├── css/
 │   ├── main.css                # Global styles, layout, typography
 │   ├── components.css          # Component-specific styles
@@ -22,6 +23,16 @@ bloodlink/
 │       ├── map.js              # Interactive Leaflet hospital map
 │       ├── donations.js        # Donate flow (4 steps) + history
 │       └── requests.js         # Blood request board + post form
+├── backend/
+│   ├── public/
+│   │   ├── index.php           # API front controller
+│   │   └── .htaccess           # Apache rewrite to index.php
+│   ├── src/
+│   │   ├── bootstrap.php       # Env loading + autoload
+│   │   ├── Database.php        # PDO PostgreSQL connector
+│   │   └── Response.php        # JSON response helper
+│   ├── .env.example            # Backend environment template
+│   └── README.md               # Backend API setup and endpoints
 ```
 
 ---
@@ -42,6 +53,23 @@ npx serve .
 # VS Code
 # Use the "Live Server" extension
 ```
+
+### Option 3 — Run with PHP backend API
+```bash
+# 1) Create database from schema
+psql -U postgres -d bloodlink -f schema.sql
+
+# 2) Configure backend env
+cp backend/.env.example backend/.env
+
+# 3) Serve frontend
+python -m http.server 3000
+
+# 4) Serve backend API (new terminal)
+php -S localhost:8080 -t backend/public
+```
+
+API base URL: `http://localhost:8080/api`
 
 Then open `http://localhost:3000` in your browser.
 

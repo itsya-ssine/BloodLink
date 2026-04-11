@@ -1,0 +1,18 @@
+# Environment files
+.env
+backend/.env
+
+# Logs
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# PHP dependencies/build artifacts
+backend/vendor/
+
+# Node dependencies (if added later)
+node_modules/
