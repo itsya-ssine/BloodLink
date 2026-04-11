@@ -30,6 +30,19 @@ if (is_file($envPath)) {
     }
 }
 
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_name(getenv('SESSION_NAME') ?: 'bloodlink_session');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => getenv('SESSION_SECURE_COOKIE') === 'true',
+        'httponly' => true,
+        'samesite' => getenv('SESSION_SAMESITE') ?: 'Lax',
+    ]);
+    session_start();
+}
+
 spl_autoload_register(static function (string $class): void {
     $prefix = 'BloodLink\\';
     if (!str_starts_with($class, $prefix)) {

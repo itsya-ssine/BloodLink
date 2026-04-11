@@ -20,6 +20,8 @@ Important variables:
 
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS` for PostgreSQL
 - `PUBLIC_API_BASE_URL` for frontend runtime API base URL
+- `SESSION_NAME`, `SESSION_SECURE_COOKIE`, `SESSION_SAMESITE` for session auth
+- `APP_URL`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME` for auth links and mail metadata
 - `CORS_ALLOWED_ORIGINS` to allow frontend origins
 - In `APP_ENV=development`, any `localhost` or `127.0.0.1` origin is allowed automatically
 
@@ -54,6 +56,20 @@ Frontend runtime config is served from:
 - `GET /api/hospitals`
 - `GET /api/hospitals/{id}`
 - `GET /api/users/current`
+- `GET /api/auth/bootstrap`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `POST /api/auth/register`
+- `GET|POST /api/auth/verify-email`
+- `POST /api/auth/verify-email/request`
+- `POST /api/auth/password/forgot`
+- `GET|POST /api/auth/password/reset`
+- `POST /api/auth/profile`
+- `DELETE /api/auth/account`
+- `POST /api/auth/2fa/setup`
+- `POST /api/auth/2fa/confirm`
+- `POST /api/auth/2fa/disable`
+- `GET /api/admin/users`
 - `PATCH /api/users/{id}`
 - `GET /api/donations?user_id=1`
 - `POST /api/donations`

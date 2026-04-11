@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use BloodLink\Database;
+use BloodLink\AuthException;
+use BloodLink\AuthService;
 use BloodLink\Response;
 
 require_once dirname(__DIR__) . '/src/bootstrap.php';
@@ -30,7 +32,8 @@ if ($allowOrigin !== null) {
     header('Vary: Origin');
 }
 
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-CSRF-Token');
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
@@ -52,6 +55,8 @@ try {
     ], 500);
 }
 
+$auth = new AuthService($db);
+
 function body(): array
 {
     $raw = file_get_contents('php://input');
@@ -66,6 +71,129 @@ function body(): array
 function notFound(): never
 {
     Response::json(['error' => 'Not Found'], 404);
+}
+
+function authResponse(callable $handler): never
+{
+    global $auth, $method;
+
+    try {
+        if (!in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+            $auth->validateCsrf($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null);
+        }
+
+        $handler();
+    } catch (AuthException $e) {
+        Response::json(array_merge(['error' => $e->getMessage()], $e->payload()), $e->statusCode());
+    }
+
+    exit;
+}
+
+if ($path === '/auth/bootstrap' && $method === 'GET') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->bootstrap());
+    });
+}
+
+if ($path === '/auth/me' && $method === 'GET') {
+    authResponse(static function () use ($auth): void {
+        Response::json([
+            'authenticated' => true,
+            'csrf_token' => $auth->csrfToken(),
+            'user' => $auth->requireAuth(),
+        ]);
+    });
+}
+
+if ($path === '/auth/register' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->register(body()), 201);
+    });
+}
+
+if ($path === '/auth/login' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->login(body()));
+    });
+}
+
+if ($path === '/auth/logout' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        $auth->logout();
+        Response::json(['status' => 'logged_out']);
+    });
+}
+
+if ($path === '/auth/verify-email/request' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->requestEmailVerification(body()));
+    });
+}
+
+if ($path === '/auth/verify-email' && in_array($method, ['GET', 'POST'], true)) {
+    authResponse(static function () use ($auth): void {
+        $token = $_GET['token'] ?? (body()['token'] ?? '');
+        Response::json($auth->verifyEmail((string) $token));
+    });
+}
+
+if ($path === '/auth/password/forgot' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->forgotPassword(body()));
+    });
+}
+
+if ($path === '/auth/password/reset' && in_array($method, ['GET', 'POST'], true)) {
+    authResponse(static function () use ($auth): void {
+        $payload = body();
+        if ($payload === [] && isset($_GET['token'])) {
+            Response::json(['token' => (string) $_GET['token']]);
+            return;
+        }
+
+        if (!isset($payload['token']) && isset($_GET['token'])) {
+            $payload['token'] = (string) $_GET['token'];
+        }
+
+        Response::json($auth->resetPassword($payload));
+    });
+}
+
+if ($path === '/auth/2fa/setup' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->setupTwoFactor());
+    });
+}
+
+if ($path === '/auth/2fa/confirm' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->confirmTwoFactor(body()));
+    });
+}
+
+if ($path === '/auth/2fa/disable' && $method === 'POST') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->disableTwoFactor(body()));
+    });
+}
+
+if ($path === '/auth/profile' && in_array($method, ['PUT', 'PATCH'], true)) {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->updateProfile(body()));
+    });
+}
+
+if ($path === '/auth/account' && $method === 'DELETE') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->deleteAccount());
+    });
+}
+
+if ($path === '/admin/users' && $method === 'GET') {
+    authResponse(static function () use ($auth): void {
+        Response::json($auth->listUsers());
+    });
 }
 
 if ($path === '/' && $method === 'GET') {
@@ -135,30 +263,10 @@ if (preg_match('#^/hospitals/(\d+)$#', $path, $m) && $method === 'GET') {
 }
 
 if ($path === '/users/current' && $method === 'GET') {
-    $stmt = $db->query('SELECT * FROM users ORDER BY id LIMIT 1');
-    $user = $stmt->fetch();
-
-    if (!$user) {
-        notFound();
-    }
-
-    $contactStmt = $db->prepare('SELECT full_name, phone, relation FROM user_emergency_contacts WHERE user_id = :user_id');
-    $contactStmt->execute(['user_id' => $user['id']]);
-    $contact = $contactStmt->fetch() ?: null;
-
-    $conditionStmt = $db->prepare('SELECT condition_name FROM user_medical_conditions WHERE user_id = :user_id ORDER BY condition_name');
-    $conditionStmt->execute(['user_id' => $user['id']]);
-    $conditions = array_map(static fn(array $r) => $r['condition_name'], $conditionStmt->fetchAll());
-
-    $achievementStmt = $db->prepare('SELECT achievement_id FROM user_achievements WHERE user_id = :user_id ORDER BY achievement_id');
-    $achievementStmt->execute(['user_id' => $user['id']]);
-    $achievementIds = array_map(static fn(array $r) => $r['achievement_id'], $achievementStmt->fetchAll());
-
-    $user['emergency_contact'] = $contact;
-    $user['medical_conditions'] = $conditions;
-    $user['achievements'] = $achievementIds;
-
-    Response::json($user);
+    authResponse(static function () use ($auth): void {
+        $current = $auth->requireAuth();
+        Response::json($auth->loadUserPayload((int) $current['id']));
+    });
 }
 
 if (preg_match('#^/users/(\d+)$#', $path, $m) && in_array($method, ['PUT', 'PATCH'], true)) {

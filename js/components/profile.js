@@ -32,10 +32,15 @@ const ProfileComponent = {
               <div class="profile-badges">
                 <span class="badge badge-red"><i class="bi bi-droplet-fill" aria-hidden="true"></i> ${u.bloodType}</span>
                 <span class="badge badge-green"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Verified Donor</span>
+                ${u.emailVerifiedAt ? '<span class="badge badge-green"><i class="bi bi-envelope-check-fill" aria-hidden="true"></i> Email Verified</span>' : '<span class="badge badge-amber"><i class="bi bi-envelope-exclamation-fill" aria-hidden="true"></i> Email Pending</span>'}
+                ${u.twoFactorEnabled ? '<span class="badge badge-blue"><i class="bi bi-shield-lock-fill" aria-hidden="true"></i> 2FA On</span>' : '<span class="badge badge-blue"><i class="bi bi-shield-fill-exclamation" aria-hidden="true"></i> 2FA Off</span>'}
                 ${eligibleNow ? '<span class="badge badge-green pulse-red"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Eligible Now</span>' : `<span class="badge badge-amber"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ${daysUntil}d until eligible</span>`}
               </div>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="ProfileComponent.openEditModal()"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit Profile</button>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+              <button class="btn btn-secondary btn-sm" onclick="ProfileComponent.openEditModal()"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit Profile</button>
+              <button class="btn btn-ghost btn-sm" onclick="ProfileComponent.logout()"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</button>
+            </div>
           </div>
           <div class="profile-stats-row">
             <div class="profile-stat">
@@ -104,6 +109,35 @@ const ProfileComponent = {
                 <div class="achievement-desc">${a.desc}</div>
               </div>
             `).join('')}
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px">
+          <div class="card fade-up delay-5">
+            <div class="card-header">
+              <span class="card-title">Account Security</span>
+              <span class="badge badge-blue"><i class="bi bi-shield-check" aria-hidden="true"></i> Session based</span>
+            </div>
+            ${this.infoRow('Role', u.role || 'user')}
+            ${this.infoRow('Email status', u.emailVerifiedAt ? 'Verified' : 'Pending verification')}
+            ${this.infoRow('2FA', u.twoFactorEnabled ? 'Enabled' : 'Disabled')}
+            ${this.infoRow('Last login', u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString('en-GB') : 'Unknown')}
+            <div class="modal-actions" style="padding-top:18px">
+              <button class="btn btn-secondary" onclick="ProfileComponent.requestVerification()"><i class="bi bi-envelope-arrow-up-fill" aria-hidden="true"></i> Resend verification</button>
+              <button class="btn btn-primary" onclick="ProfileComponent.toggleTwoFactor()"><i class="bi bi-shield-lock-fill" aria-hidden="true"></i> Manage 2FA</button>
+            </div>
+          </div>
+          <div class="card fade-up delay-5">
+            <div class="card-header">
+              <span class="card-title">Danger Zone</span>
+              <span class="badge badge-red"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Irreversible</span>
+            </div>
+            <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.6;margin-bottom:16px">
+              Delete your account to permanently remove your personal session and profile data.
+            </p>
+            <div class="modal-actions">
+              <button class="btn btn-secondary" onclick="ProfileComponent.deleteAccount()"><i class="bi bi-trash3-fill" aria-hidden="true"></i> Delete account</button>
+            </div>
           </div>
         </div>
       </div>
@@ -180,7 +214,7 @@ const ProfileComponent = {
 
     if (window.BloodLinkApi) {
       try {
-        await window.BloodLinkApi.updateUser(u.id, {
+        const result = await window.BloodLinkApi.updateProfile({
           first_name: u.firstName,
           last_name: u.lastName,
           phone: u.phone,
@@ -188,6 +222,9 @@ const ProfileComponent = {
           address: u.address,
           weight_kg: u.weight,
         });
+        if (result?.user) {
+          Object.assign(AppData.currentUser, result.user);
+        }
       } catch (err) {
         App.showToast('Could not save profile to backend', 'error');
         return;
@@ -202,5 +239,69 @@ const ProfileComponent = {
     this.closeEditModal();
     App.showToast('Profile updated successfully!', 'success');
     App.navigate('profile');
+  },
+
+  async logout() {
+    try {
+      await BloodLinkApi.logout();
+    } catch (error) {
+      App.showToast(error.message || 'Unable to log out', 'error');
+      return;
+    }
+
+    App.renderAuthScreen('login', 'You have been signed out.');
+  },
+
+  async requestVerification() {
+    try {
+      const result = await BloodLinkApi.requestEmailVerification();
+      const message = result.verification_link ? `Verification link: ${result.verification_link}` : 'Verification email sent.';
+      App.showToast(message, 'success');
+    } catch (error) {
+      App.showToast(error.message || 'Unable to request verification', 'error');
+    }
+  },
+
+  async toggleTwoFactor() {
+    if (AppData.currentUser.twoFactorEnabled) {
+      const password = prompt('Confirm your password to disable 2FA:');
+      if (!password) return;
+      const code = prompt('Enter your 2FA code or recovery code:');
+      if (!code) return;
+
+      try {
+        await BloodLinkApi.disableTwoFactor({ password, code });
+        AppData.currentUser.twoFactorEnabled = false;
+        App.showToast('2FA disabled', 'success');
+        App.navigate('profile');
+      } catch (error) {
+        App.showToast(error.message || 'Unable to disable 2FA', 'error');
+      }
+      return;
+    }
+
+    try {
+      const setup = await BloodLinkApi.setupTwoFactor();
+      const code = prompt(`2FA setup started. Scan the QR code in your authenticator app using this URI:\n${setup.otpauth_url}\n\nEnter the code generated by your app:`);
+      if (!code) return;
+
+      await BloodLinkApi.confirmTwoFactor({ code });
+      AppData.currentUser.twoFactorEnabled = true;
+      App.showToast('2FA enabled', 'success');
+      App.navigate('profile');
+    } catch (error) {
+      App.showToast(error.message || 'Unable to set up 2FA', 'error');
+    }
+  },
+
+  async deleteAccount() {
+    if (!confirm('Delete your account permanently?')) return;
+
+    try {
+      await BloodLinkApi.deleteAccount();
+      App.renderAuthScreen('login', 'Your account was deleted.');
+    } catch (error) {
+      App.showToast(error.message || 'Unable to delete account', 'error');
+    }
   },
 };

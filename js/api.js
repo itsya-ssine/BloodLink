@@ -4,10 +4,19 @@
 
 const BloodLinkApi = (() => {
   const API_BASE = window.BLOODLINK_ENV?.API_BASE_URL || window.BLOODLINK_API_BASE || 'http://localhost:8080/api';
+  let csrfToken = null;
 
   async function request(path, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+
     const res = await fetch(`${API_BASE}${path}`, {
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      credentials: 'include',
+      headers,
       ...options,
     });
 
@@ -20,6 +29,16 @@ const BloodLinkApi = (() => {
     }
 
     return payload;
+  }
+
+  function setCsrfToken(token) {
+    csrfToken = token || null;
+  }
+
+  async function bootstrapAuth() {
+    const result = await request('/auth/bootstrap');
+    setCsrfToken(result.csrf_token);
+    return result;
   }
 
   function calcAge(dateStr) {
@@ -67,6 +86,10 @@ const BloodLinkApi = (() => {
         relation: row.emergency_contact?.relation || '',
       },
       achievements: Array.isArray(row.achievements) ? row.achievements : [],
+      role: row.role || 'user',
+      emailVerifiedAt: row.emailVerifiedAt || row.email_verified_at || null,
+      twoFactorEnabled: Boolean(row.twoFactorEnabled ?? row.two_factor_enabled),
+      lastLoginAt: row.lastLoginAt || row.last_login_at || null,
     };
   }
 
@@ -131,8 +154,23 @@ const BloodLinkApi = (() => {
     };
   }
 
-  async function getInitialData() {
-    const userRow = await request('/users/current');
+  async function getInitialData(authBootstrap = null) {
+    const session = authBootstrap || await bootstrapAuth();
+
+    if (!session.authenticated) {
+      return {
+        authenticated: false,
+        currentUser: null,
+        hospitals: [],
+        donations: [],
+        requests: [],
+        achievements: [],
+        bloodTypes: [],
+        globalStats: null,
+      };
+    }
+
+    const userRow = session.user;
     const userId = Number(userRow?.id || 0);
 
     const [hospitalsRows, donationsRows, requestsRows, achievementsRows, statsRow, bloodTypesRows] = await Promise.all([
@@ -149,6 +187,8 @@ const BloodLinkApi = (() => {
 
     return {
       currentUser: user,
+      authenticated: true,
+      csrfToken: csrfToken,
       hospitals: (hospitalsRows || []).map(mapHospital),
       donations: (donationsRows || []).map(mapDonation),
       requests: (requestsRows || []).map(mapRequest),
@@ -161,6 +201,85 @@ const BloodLinkApi = (() => {
         hospitalsNetwork: Number(statsRow?.hospitals_network || 0),
       },
     };
+  }
+
+  async function login(payload) {
+    const result = await request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    setCsrfToken(result.csrf_token);
+    return result;
+  }
+
+  async function register(payload) {
+    return request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async function logout() {
+    const result = await request('/auth/logout', { method: 'POST' });
+    setCsrfToken(null);
+    return result;
+  }
+
+  async function verifyEmail(token) {
+    return request(`/auth/verify-email?token=${encodeURIComponent(token)}`);
+  }
+
+  async function requestEmailVerification(payload = {}) {
+    return request('/auth/verify-email/request', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async function forgotPassword(payload) {
+    return request('/auth/password/forgot', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async function resetPassword(payload) {
+    return request('/auth/password/reset', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async function updateProfile(payload) {
+    const result = await request('/auth/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    return result;
+  }
+
+  async function deleteAccount() {
+    const result = await request('/auth/account', { method: 'DELETE' });
+    setCsrfToken(null);
+    return result;
+  }
+
+  async function setupTwoFactor() {
+    return request('/auth/2fa/setup', { method: 'POST' });
+  }
+
+  async function confirmTwoFactor(payload) {
+    return request('/auth/2fa/confirm', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async function disableTwoFactor(payload) {
+    return request('/auth/2fa/disable', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
   }
 
   async function updateUser(userId, payload) {
@@ -185,7 +304,21 @@ const BloodLinkApi = (() => {
   }
 
   return {
+    bootstrapAuth,
+    setCsrfToken,
     getInitialData,
+    login,
+    register,
+    logout,
+    verifyEmail,
+    requestEmailVerification,
+    forgotPassword,
+    resetPassword,
+    updateProfile,
+    deleteAccount,
+    setupTwoFactor,
+    confirmTwoFactor,
+    disableTwoFactor,
     updateUser,
     createRequest,
     createDonation,

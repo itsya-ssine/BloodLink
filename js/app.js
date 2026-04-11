@@ -3,12 +3,14 @@
 // =========================================
 
 window.AppData = window.AppData || {};
+var AppData = window.AppData;
 
 const App = {
 
   currentPage: 'dashboard',
   currentFilter: 'all',
   theme: 'dark',
+  authenticated: false,
 
   async init() {
     this.initTheme();
@@ -63,7 +65,15 @@ const App = {
 
     // Load backend data before first render
     try {
-      await this.bootstrapData();
+      const authState = await BloodLinkApi.bootstrapAuth();
+      BloodLinkApi.setCsrfToken(authState.csrf_token);
+
+      if (!authState.authenticated) {
+        this.renderAuthScreen('login');
+        return;
+      }
+
+      await this.bootstrapData(authState);
     } catch (err) {
       console.error('Backend bootstrap failed', err);
       this.renderBackendError(err instanceof Error ? err.message : 'Unable to load data from backend');
@@ -77,19 +87,52 @@ const App = {
     this.navigate('dashboard');
   },
 
-  async bootstrapData() {
+  async bootstrapData(authState = null) {
     if (!window.BloodLinkApi) {
       throw new Error('API client is not available');
     }
 
-    const data = await window.BloodLinkApi.getInitialData();
+    const data = await window.BloodLinkApi.getInitialData(authState);
+    if (!data.authenticated) {
+      this.renderAuthScreen('login');
+      return;
+    }
+
     const required = ['currentUser', 'hospitals', 'donations', 'requests', 'achievements', 'bloodTypes', 'globalStats'];
     const missing = required.filter(key => !(key in data));
     if (missing.length > 0) {
       throw new Error(`Incomplete backend payload: ${missing.join(', ')}`);
     }
 
-    window.AppData = data;
+    Object.keys(window.AppData).forEach(key => delete window.AppData[key]);
+    Object.assign(window.AppData, data);
+    this.authenticated = true;
+    document.body.classList.remove('auth-mode');
+  },
+
+  async loadApp() {
+    const data = await window.BloodLinkApi.getInitialData();
+    if (!data.authenticated) {
+      this.renderAuthScreen('login');
+      return;
+    }
+
+    Object.keys(window.AppData).forEach(key => delete window.AppData[key]);
+    Object.assign(window.AppData, data);
+    this.authenticated = true;
+    document.body.classList.remove('auth-mode');
+    this.updateSidebarUser();
+    this.navigate('dashboard');
+  },
+
+  renderAuthScreen(view = 'login', message = '') {
+    this.authenticated = false;
+    document.body.classList.add('auth-mode');
+    const main = document.getElementById('mainContent');
+    if (!main || !window.AuthComponent) return;
+
+    main.innerHTML = window.AuthComponent.render(view, message);
+    window.AuthComponent.bind(view);
   },
 
   renderBackendError(message) {
@@ -153,6 +196,7 @@ const App = {
 
   updateSidebarUser() {
     const u = AppData.currentUser;
+    if (!u) return;
     const nameEl   = document.getElementById('sidebarName');
     const avatarEl = document.getElementById('sidebarAvatar');
     const bloodEl  = document.getElementById('sidebarBlood');

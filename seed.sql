@@ -31,12 +31,23 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO users (
   first_name, last_name, email, phone, blood_type_code, date_of_birth,
   gender, weight_kg, city, address, join_date, total_donations,
-  last_donation_date, next_eligible_date, saved_lives, points, donor_level, is_eligible
+  last_donation_date, next_eligible_date, saved_lives, points, donor_level, is_eligible,
+  password_hash, role, email_verified_at, email_verification_token_hash, email_verification_expires_at,
+  password_reset_token_hash, password_reset_expires_at, two_factor_secret, two_factor_enabled,
+  two_factor_recovery_codes, last_login_at, deleted_at
 )
 VALUES (
   'Yassine', 'Elmajdoubi', 'yassine.elmajdoubi@email.com', '+212 6 12 34 56 78', 'O+',
   DATE '2005-01-01', 'Male', 70, 'Khouribga', 'Rue Zerktouni, Khouribga 25000',
-  DATE '2021-03-10', 1, DATE '2024-11-20', DATE '2025-02-20', 3, 1420, 'Gold Donor', TRUE
+  DATE '2021-03-10', 1, DATE '2024-11-20', DATE '2025-02-20', 3, 1420, 'Gold Donor', TRUE,
+  '$2y$10$qF0Z9.NFcQEfVoFBhvPFz.K6Hzx0KRRdbFPHgboqz4wzR2X6HE2fy', 'user', NOW(), NULL, NULL, NULL, NULL, NULL, FALSE,
+  '[]'::jsonb, NOW(), NULL
+), (
+  'Admin', 'BloodLink', 'admin@bloodlink.local', '+212 6 00 00 00 00', 'O+',
+  DATE '1990-01-01', 'Other', 80, 'Khouribga', 'BloodLink HQ',
+  DATE '2026-04-12', 0, NULL, NULL, 0, 0, 'Administrator', TRUE,
+  '$2y$10$dOcl5K1WFowE76slLsDsLuM.q0ZsO/Zb6RH6uPTWz/UR.dGlssy2u', 'admin', NOW(), NULL, NULL, NULL, NULL, NULL, FALSE,
+  '[]'::jsonb, NOW(), NULL
 )
 ON CONFLICT (email) DO UPDATE
 SET first_name = EXCLUDED.first_name,
@@ -56,6 +67,17 @@ SET first_name = EXCLUDED.first_name,
     points = EXCLUDED.points,
     donor_level = EXCLUDED.donor_level,
     is_eligible = EXCLUDED.is_eligible,
+    password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role,
+    email_verified_at = EXCLUDED.email_verified_at,
+    email_verification_token_hash = EXCLUDED.email_verification_token_hash,
+    email_verification_expires_at = EXCLUDED.email_verification_expires_at,
+    password_reset_token_hash = EXCLUDED.password_reset_token_hash,
+    password_reset_expires_at = EXCLUDED.password_reset_expires_at,
+    two_factor_secret = EXCLUDED.two_factor_secret,
+    two_factor_enabled = EXCLUDED.two_factor_enabled,
+    two_factor_recovery_codes = EXCLUDED.two_factor_recovery_codes,
+    last_login_at = EXCLUDED.last_login_at,
     updated_at = NOW();
 
 INSERT INTO user_emergency_contacts (user_id, full_name, phone, relation)
