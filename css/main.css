@@ -29,6 +29,33 @@
   --font-mono:      'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
   --shadow-card:    0 4px 32px rgba(0,0,0,0.5);
   --shadow-glow:    0 0 40px rgba(192,21,42,0.2);
+  --hero-gradient:  linear-gradient(135deg, #1a0810 0%, #2d0615 40%, #0a0a0c 100%);
+  --profile-gradient: linear-gradient(135deg, #1a0810, #2d0615, #1a1a2e);
+  --map-bg:         #111118;
+  --map-filter:     brightness(0.5) saturate(0.6) hue-rotate(200deg);
+  --popup-title:    #1a1a22;
+  --popup-text:     #666;
+}
+
+:root[data-theme='light'] {
+  --crimson-glow:   rgba(192, 21, 42, 0.18);
+  --bg-void:        #f5f6fa;
+  --bg-card:        #ffffff;
+  --bg-elevated:    #eef1f6;
+  --bg-hover:       #e6eaf3;
+  --border:         rgba(23, 28, 45, 0.10);
+  --border-strong:  rgba(23, 28, 45, 0.18);
+  --text-primary:   #1a1f2b;
+  --text-secondary: #495368;
+  --text-muted:     #74809a;
+  --shadow-card:    0 8px 30px rgba(20, 26, 44, 0.08);
+  --shadow-glow:    0 0 28px rgba(192, 21, 42, 0.12);
+  --hero-gradient:  linear-gradient(135deg, #fff1f3 0%, #ffe5ea 42%, #f8fbff 100%);
+  --profile-gradient: linear-gradient(135deg, #ffe6eb, #ffd6df, #edf3ff);
+  --map-bg:         #dfe5ef;
+  --map-filter:     none;
+  --popup-title:    #1a1f2b;
+  --popup-text:     #4f5b70;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -90,6 +117,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.sidebar-tools {
+  padding: 10px 20px 2px;
+  display: flex;
+  justify-content: center;
 }
 
 .nav-item {
@@ -200,6 +233,52 @@ body {
   font-size: 1.3rem;
   cursor: pointer;
   padding: 4px;
+}
+
+.mobile-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--crimson-light);
+  transform: translateY(-2px);
+}
+
+.theme-toggle:active {
+  transform: translateY(0);
+}
+
+.theme-icon {
+  line-height: 1;
+  font-size: 1.25rem;
+}
+
+.theme-toggle.compact {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+
+.theme-toggle.compact .theme-label {
+  display: none;
 }
 
 /* ---- MAIN CONTENT ---- */

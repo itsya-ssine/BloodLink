@@ -4,7 +4,7 @@
 
 /* ---- DASHBOARD ---- */
 .hero-banner {
-  background: linear-gradient(135deg, #1a0810 0%, #2d0615 40%, #0a0a0c 100%);
+  background: var(--hero-gradient);
   border: 1px solid rgba(192,21,42,0.2);
   border-radius: var(--radius-xl);
   padding: 36px 40px;
@@ -233,8 +233,8 @@
   border: 1px solid var(--border);
 }
 
-.leaflet-container { background: #111118 !important; }
-.leaflet-tile { filter: brightness(0.5) saturate(0.6) hue-rotate(200deg); }
+.leaflet-container { background: var(--map-bg) !important; }
+.leaflet-tile { filter: var(--map-filter); }
 
 .map-popup {
   font-family: var(--font-body);
@@ -244,19 +244,19 @@
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 4px;
-  color: #1a1a22;
+  color: var(--popup-title);
 }
 
 .map-popup p {
   font-size: 0.78rem;
-  color: #666;
+  color: var(--popup-text);
   margin-bottom: 6px;
 }
 
 /* ---- PROFILE ---- */
 .profile-cover {
   height: 130px;
-  background: linear-gradient(135deg, #1a0810, #2d0615, #1a1a2e);
+  background: var(--profile-gradient);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   position: relative;
 }

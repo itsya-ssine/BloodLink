@@ -6,8 +6,11 @@ const App = {
 
   currentPage: 'dashboard',
   currentFilter: 'all',
+  theme: 'dark',
 
   init() {
+    this.initTheme();
+
     // Set up navigation
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', (e) => {
@@ -61,6 +64,46 @@ const App = {
 
     // Navigate to dashboard
     this.navigate('dashboard');
+  },
+
+  initTheme() {
+    const storedTheme = localStorage.getItem('bloodlink-theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const initialTheme = storedTheme || (prefersLight ? 'light' : 'dark');
+
+    this.applyTheme(initialTheme);
+
+    document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => this.toggleTheme());
+    });
+  },
+
+  applyTheme(theme) {
+    this.theme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('bloodlink-theme', theme);
+    this.syncThemeToggleUI();
+  },
+
+  toggleTheme() {
+    this.applyTheme(this.theme === 'dark' ? 'light' : 'dark');
+  },
+
+  syncThemeToggleUI() {
+    const switchTo = this.theme === 'dark' ? 'light' : 'dark';
+    const icon = switchTo === 'light' ? '☀' : '☾';
+    const label = switchTo === 'light' ? 'Light' : 'Dark';
+
+    document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+      const iconEl = btn.querySelector('.theme-icon');
+      const labelEl = btn.querySelector('.theme-label');
+
+      if (iconEl) iconEl.textContent = icon;
+      if (labelEl) labelEl.textContent = label;
+
+      btn.setAttribute('aria-label', `Switch to ${switchTo} mode`);
+      btn.setAttribute('title', `Switch to ${switchTo} mode`);
+    });
   },
 
   navigate(page) {
