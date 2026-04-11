@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BloodLink — Save Lives, One Drop at a Time</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+</head>
+<body>
+
+  <!-- SIDEBAR NAV -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-drop">🩸</span>
+      <span class="logo-text">Blood<strong>Link</strong></span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">⬡</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" data-page="profile">
+        <span class="nav-icon">◈</span> My Profile
+      </a>
+      <a href="#" class="nav-item" data-page="donate">
+        <span class="nav-icon">♥</span> Donate Blood
+      </a>
+      <a href="#" class="nav-item" data-page="history">
+        <span class="nav-icon">◷</span> History
+      </a>
+      <a href="#" class="nav-item" data-page="hospitals">
+        <span class="nav-icon">✛</span> Hospitals Map
+      </a>
+      <a href="#" class="nav-item" data-page="requests">
+        <span class="nav-icon">◉</span> Blood Requests
+      </a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebarAvatar">AK</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebarName">Ahmed Khalil</div>
+        <div class="user-blood" id="sidebarBlood">O+</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <span class="logo-text">Blood<strong>Link</strong></span>
+    <div class="user-avatar small" id="mobileAvatar">AK</div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="mainContent">
+    <!-- Pages injected by JS -->
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/components/profile.js"></script>
+  <script src="js/components/map.js"></script>
+  <script src="js/components/donations.js"></script>
+  <script src="js/components/requests.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
