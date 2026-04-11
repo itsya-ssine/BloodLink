@@ -10,8 +10,23 @@ require_once dirname(__DIR__) . '/src/bootstrap.php';
 $allowedOrigins = array_filter(array_map('trim', explode(',', getenv('CORS_ALLOWED_ORIGINS') ?: 'http://localhost:3000')));
 $requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-if ($requestOrigin !== '' && in_array($requestOrigin, $allowedOrigins, true)) {
-    header('Access-Control-Allow-Origin: ' . $requestOrigin);
+$allowOrigin = null;
+
+if ($requestOrigin !== '') {
+    if (in_array($requestOrigin, $allowedOrigins, true)) {
+        $allowOrigin = $requestOrigin;
+    } elseif (getenv('APP_ENV') === 'development') {
+        $originParts = parse_url($requestOrigin);
+        $originHost = $originParts['host'] ?? '';
+
+        if (in_array($originHost, ['localhost', '127.0.0.1'], true)) {
+            $allowOrigin = $requestOrigin;
+        }
+    }
+}
+
+if ($allowOrigin !== null) {
+    header('Access-Control-Allow-Origin: ' . $allowOrigin);
     header('Vary: Origin');
 }
 
@@ -70,6 +85,11 @@ if ($path === '/global-stats' && $method === 'GET') {
     $stmt = $db->query('SELECT total_donors, donations_this_month, lives_this_year, hospitals_network, updated_at FROM global_stats WHERE id = 1');
     $stats = $stmt->fetch();
     Response::json($stats ?: []);
+}
+
+if ($path === '/blood-types' && $method === 'GET') {
+    $stmt = $db->query('SELECT code FROM blood_types ORDER BY code');
+    Response::json($stmt->fetchAll());
 }
 
 if ($path === '/achievements' && $method === 'GET') {

@@ -167,7 +167,7 @@ const ProfileComponent = {
     document.getElementById('editModal').classList.remove('open');
   },
 
-  saveProfile() {
+  async saveProfile() {
     const u = AppData.currentUser;
     u.firstName = document.getElementById('editFirstName').value;
     u.lastName  = document.getElementById('editLastName').value;
@@ -177,6 +177,22 @@ const ProfileComponent = {
     u.city      = document.getElementById('editCity').value;
     u.address   = document.getElementById('editAddress').value;
     u.weight    = parseInt(document.getElementById('editWeight').value);
+
+    if (window.BloodLinkApi) {
+      try {
+        await window.BloodLinkApi.updateUser(u.id, {
+          first_name: u.firstName,
+          last_name: u.lastName,
+          phone: u.phone,
+          city: u.city,
+          address: u.address,
+          weight_kg: u.weight,
+        });
+      } catch (err) {
+        App.showToast('Could not save profile to backend', 'error');
+        return;
+      }
+    }
 
     // Update sidebar
     document.getElementById('sidebarName').textContent = u.fullName;

@@ -197,7 +197,7 @@ const RequestsComponent = {
     document.getElementById('postModal').classList.remove('open');
   },
 
-  postRequest() {
+  async postRequest() {
     const patient = document.getElementById('reqPatient').value.trim();
     const blood   = document.getElementById('reqBlood').value;
     const units   = parseInt(document.getElementById('reqUnits').value) || 1;
@@ -211,8 +211,31 @@ const RequestsComponent = {
       return;
     }
 
+    let newId = Date.now();
+    if (window.BloodLinkApi) {
+      try {
+        const created = await window.BloodLinkApi.createRequest({
+          patient_name: patient,
+          patient_age: parseInt(document.getElementById('reqAge').value) || null,
+          blood_type_code: blood,
+          units_needed: units,
+          hospital_name: hospital,
+          city: 'Khouribga',
+          urgency_level: urgency,
+          reason,
+          posted_at_label: 'Just now',
+          contact_phone: contact,
+          is_verified: false,
+        });
+        newId = created?.id || newId;
+      } catch (err) {
+        App.showToast('Could not post request to backend', 'error');
+        return;
+      }
+    }
+
     AppData.requests.unshift({
-      id: Date.now(),
+      id: newId,
       patientName: patient,
       bloodType: blood,
       units, hospital,

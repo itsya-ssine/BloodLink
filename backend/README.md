@@ -16,6 +16,13 @@ Copy `.env.example` to `.env` and edit values:
 cp backend/.env.example backend/.env
 ```
 
+Important variables:
+
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS` for PostgreSQL
+- `PUBLIC_API_BASE_URL` for frontend runtime API base URL
+- `CORS_ALLOWED_ORIGINS` to allow frontend origins
+- In `APP_ENV=development`, any `localhost` or `127.0.0.1` origin is allowed automatically
+
 ## 3) Create database schema
 
 Use the schema in [../schema.sql](../schema.sql):
@@ -33,6 +40,10 @@ php -S localhost:8080 -t backend/public
 ```
 
 Base URL: `http://localhost:8080/api`
+
+Frontend runtime config is served from:
+
+- `http://localhost:8080/config.js.php`
 
 ## 5) Available endpoints
 

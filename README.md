@@ -59,6 +59,9 @@ npx serve .
 # 1) Create database from schema
 psql -U postgres -d bloodlink -f schema.sql
 
+# 1.1) Seed minimal startup data
+psql -U postgres -d bloodlink -f seed.sql
+
 # 2) Configure backend env
 cp backend/.env.example backend/.env
 

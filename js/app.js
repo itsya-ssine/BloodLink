@@ -2,13 +2,15 @@
 // BloodLink — Main Application
 // =========================================
 
+window.AppData = window.AppData || {};
+
 const App = {
 
   currentPage: 'dashboard',
   currentFilter: 'all',
   theme: 'dark',
 
-  init() {
+  async init() {
     this.initTheme();
 
     // Set up navigation
@@ -59,11 +61,50 @@ const App = {
       }
     });
 
+    // Load backend data before first render
+    try {
+      await this.bootstrapData();
+    } catch (err) {
+      console.error('Backend bootstrap failed', err);
+      this.renderBackendError(err instanceof Error ? err.message : 'Unable to load data from backend');
+      return;
+    }
+
     // Update sidebar user info
     this.updateSidebarUser();
 
     // Navigate to dashboard
     this.navigate('dashboard');
+  },
+
+  async bootstrapData() {
+    if (!window.BloodLinkApi) {
+      throw new Error('API client is not available');
+    }
+
+    const data = await window.BloodLinkApi.getInitialData();
+    const required = ['currentUser', 'hospitals', 'donations', 'requests', 'achievements', 'bloodTypes', 'globalStats'];
+    const missing = required.filter(key => !(key in data));
+    if (missing.length > 0) {
+      throw new Error(`Incomplete backend payload: ${missing.join(', ')}`);
+    }
+
+    window.AppData = data;
+  },
+
+  renderBackendError(message) {
+    const main = document.getElementById('mainContent');
+    if (!main) return;
+
+    main.innerHTML = `
+      <div class="card" style="max-width:720px;margin:80px auto;padding:32px">
+        <div class="card-header" style="margin-bottom:12px">
+          <span class="card-title"><i class="bi bi-database-exclamation" aria-hidden="true"></i> Backend Required</span>
+        </div>
+        <p style="color:var(--text-secondary);margin-bottom:10px">The app is configured to use PostgreSQL data only. It will not fall back to mock data.</p>
+        <p style="color:var(--text-muted);font-size:0.85rem">${message}</p>
+      </div>
+    `;
   },
 
   initTheme() {
@@ -158,4 +199,6 @@ const App = {
 };
 
 // ---- BOOT ----
-document.addEventListener('DOMContentLoaded', () => App.init());
+document.addEventListener('DOMContentLoaded', async () => {
+  await App.init();
+});

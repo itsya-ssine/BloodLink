@@ -417,9 +417,43 @@ const DonationsComponent = {
     }
   },
 
-  confirm() {
+  async confirm() {
     // Add donation to history
     const h = AppData.hospitals.find(x => x.id === this.selection.hospitalId) || AppData.hospitals[0];
+    const donationDate = this.selection.date;
+
+    if (window.BloodLinkApi) {
+      try {
+        await window.BloodLinkApi.createDonation({
+          donor_user_id: AppData.currentUser.id,
+          hospital_id: h.id,
+          hospital_name: h.name,
+          city: h.city,
+          blood_type_code: AppData.currentUser.bloodType,
+          donated_at: donationDate,
+          volume_ml: 450,
+          status: 'completed',
+          has_certificate: true,
+        });
+      } catch (err) {
+        App.showToast('Could not confirm appointment in backend', 'error');
+        return;
+      }
+    }
+
+    AppData.donations.unshift({
+      id: Date.now(),
+      date: donationDate,
+      hospital: h.name,
+      city: h.city || '',
+      bloodType: AppData.currentUser.bloodType,
+      volume: 450,
+      status: 'completed',
+      certificate: true,
+    });
+
+    AppData.currentUser.totalDonations += 1;
+    AppData.currentUser.savedLives += 3;
     AppData.currentUser.lastDonation = this.selection.date;
     const next = new Date(this.selection.date);
     next.setDate(next.getDate() + 84);
