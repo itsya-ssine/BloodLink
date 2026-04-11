@@ -16,9 +16,9 @@ const RequestsComponent = {
         <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap" class="fade-up delay-1">
           <div class="tab-bar" style="margin-bottom:0">
             <button class="tab-btn active" onclick="RequestsComponent.filter('all', this)">All</button>
-            <button class="tab-btn" onclick="RequestsComponent.filter('critical', this)">🔴 Critical</button>
-            <button class="tab-btn" onclick="RequestsComponent.filter('urgent', this)">🟠 Urgent</button>
-            <button class="tab-btn" onclick="RequestsComponent.filter('moderate', this)">🟡 Moderate</button>
+            <button class="tab-btn" onclick="RequestsComponent.filter('critical', this)"><i class="bi bi-circle-fill" style="color:#E8233D" aria-hidden="true"></i> Critical</button>
+            <button class="tab-btn" onclick="RequestsComponent.filter('urgent', this)"><i class="bi bi-circle-fill" style="color:#E8943A" aria-hidden="true"></i> Urgent</button>
+            <button class="tab-btn" onclick="RequestsComponent.filter('moderate', this)"><i class="bi bi-circle-fill" style="color:#E8D43A" aria-hidden="true"></i> Moderate</button>
           </div>
           <div style="flex:1"></div>
           <button class="btn btn-primary" onclick="RequestsComponent.openPostModal()">+ Post Request</button>
@@ -27,23 +27,23 @@ const RequestsComponent = {
         <!-- Stats Row -->
         <div class="grid-4 fade-up delay-2" style="margin-bottom:24px">
           <div class="stat-card">
-            <div class="stat-icon">🆘</div>
+            <div class="stat-icon"><i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i></div>
             <div class="stat-label">Active Requests</div>
             <div class="stat-value crimson">${AppData.requests.length}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🔴</div>
+            <div class="stat-icon"><i class="bi bi-activity" aria-hidden="true"></i></div>
             <div class="stat-label">Critical</div>
             <div class="stat-value crimson">${AppData.requests.filter(r => r.urgency === 'critical').length}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🩸</div>
+            <div class="stat-icon"><i class="bi bi-droplet-half" aria-hidden="true"></i></div>
             <div class="stat-label">My Blood Type</div>
             <div class="stat-value">${AppData.requests.filter(r => r.bloodType === AppData.currentUser.bloodType).length}</div>
             <div class="stat-change">Matching ${AppData.currentUser.bloodType}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">✓</div>
+            <div class="stat-icon"><i class="bi bi-check2-circle" aria-hidden="true"></i></div>
             <div class="stat-label">Responses Today</div>
             <div class="stat-value green">24</div>
           </div>
@@ -114,7 +114,7 @@ const RequestsComponent = {
 
           <div class="modal-actions">
             <button class="btn btn-secondary" onclick="RequestsComponent.closePostModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="RequestsComponent.postRequest()">🆘 Post Request</button>
+            <button class="btn btn-primary" onclick="RequestsComponent.postRequest()"><i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i> Post Request</button>
           </div>
         </div>
       </div>
@@ -131,7 +131,7 @@ const RequestsComponent = {
           </div>
           <div class="modal-actions">
             <button class="btn btn-secondary" onclick="RequestsComponent.closeRespondModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="RequestsComponent.sendResponse()">❤️ I Want to Help</button>
+            <button class="btn btn-primary" onclick="RequestsComponent.sendResponse()"><i class="bi bi-heart-fill" aria-hidden="true"></i> I Want to Help</button>
           </div>
         </div>
       </div>
@@ -151,14 +151,14 @@ const RequestsComponent = {
         <div class="request-info">
           <div class="request-name">
             ${r.patientName}
-            ${r.verified ? '<span class="badge badge-green" style="font-size:0.65rem">✓ Verified</span>' : ''}
+            ${r.verified ? '<span class="badge badge-green" style="font-size:0.65rem"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Verified</span>' : ''}
             ${isMyType ? '<span class="badge badge-red" style="font-size:0.65rem">Matches Your Type</span>' : ''}
           </div>
           <div class="request-details">
-            <span class="request-detail">🏥 ${r.hospital}</span>
-            <span class="request-detail">📍 ${r.city}</span>
-            <span class="request-detail">💉 ${r.units} unit${r.units > 1 ? 's' : ''} needed</span>
-            <span class="request-detail">⏰ ${r.postedAt}</span>
+            <span class="request-detail"><i class="bi bi-hospital" aria-hidden="true"></i> ${r.hospital}</span>
+            <span class="request-detail"><i class="bi bi-geo-alt" aria-hidden="true"></i> ${r.city}</span>
+            <span class="request-detail"><i class="bi bi-eyedropper" aria-hidden="true"></i> ${r.units} unit${r.units > 1 ? 's' : ''} needed</span>
+            <span class="request-detail"><i class="bi bi-clock" aria-hidden="true"></i> ${r.postedAt}</span>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
             <span class="badge ${urgencyBadge[r.urgency]}">${r.urgency.toUpperCase()}</span>
@@ -166,8 +166,8 @@ const RequestsComponent = {
           </div>
         </div>
         <div class="request-actions">
-          <button class="btn btn-primary btn-sm" onclick="RequestsComponent.openRespondModal(${r.id})">❤️ Respond</button>
-          <a class="btn btn-secondary btn-sm" href="tel:${r.contact}">📞 Call</a>
+          <button class="btn btn-primary btn-sm" onclick="RequestsComponent.openRespondModal(${r.id})"><i class="bi bi-heart-fill" aria-hidden="true"></i> Respond</button>
+          <a class="btn btn-secondary btn-sm" href="tel:${r.contact}"><i class="bi bi-telephone-fill" aria-hidden="true"></i> Call</a>
         </div>
       </div>
     `;
@@ -185,7 +185,7 @@ const RequestsComponent = {
     if (list) {
       list.innerHTML = filtered.length
         ? filtered.map(r => this.renderRequestCard(r)).join('')
-        : `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">No ${urgency} requests</div></div>`;
+        : `<div class="empty-state"><div class="empty-icon"><i class="bi bi-check-circle" aria-hidden="true"></i></div><div class="empty-title">No ${urgency} requests</div></div>`;
     }
   },
 
@@ -253,6 +253,6 @@ const RequestsComponent = {
 
   sendResponse() {
     this.closeRespondModal();
-    App.showToast('❤️ Thank you! The family has been notified.', 'success');
+    App.showToast('Thank you! The family has been notified.', 'success');
   },
 };

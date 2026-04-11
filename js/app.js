@@ -91,15 +91,14 @@ const App = {
 
   syncThemeToggleUI() {
     const switchTo = this.theme === 'dark' ? 'light' : 'dark';
-    const icon = switchTo === 'light' ? '☀' : '☾';
-    const label = switchTo === 'light' ? 'Light' : 'Dark';
+    const iconClass = switchTo === 'light' ? 'bi-sun-fill' : 'bi-moon-stars-fill';
 
     document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
       const iconEl = btn.querySelector('.theme-icon');
-      const labelEl = btn.querySelector('.theme-label');
 
-      if (iconEl) iconEl.textContent = icon;
-      if (labelEl) labelEl.textContent = label;
+      if (iconEl) {
+        iconEl.className = `bi ${iconClass} theme-icon`;
+      }
 
       btn.setAttribute('aria-label', `Switch to ${switchTo} mode`);
       btn.setAttribute('title', `Switch to ${switchTo} mode`);
@@ -129,9 +128,13 @@ const App = {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
 
-    const icons = { success: '✓', error: '✗', info: 'ℹ' };
+    const icons = {
+      success: 'bi-check-circle-fill',
+      error: 'bi-x-circle-fill',
+      info: 'bi-info-circle-fill',
+    };
     toast.innerHTML = `
-      <span style="font-size:1.1rem">${icons[type] || '•'}</span>
+      <i class="bi ${icons[type] || 'bi-dot'}" style="font-size:1.1rem" aria-hidden="true"></i>
       <span style="font-size:0.875rem">${message}</span>
     `;
 

@@ -22,7 +22,7 @@ const DonationsComponent = {
             <p class="page-subtitle">Schedule your next life-saving donation</p>
           </div>
           <div class="card fade-up delay-1" style="text-align:center;padding:60px 40px">
-            <div style="font-size:4rem;margin-bottom:20px">⏳</div>
+            <div style="font-size:4rem;margin-bottom:20px"><i class="bi bi-hourglass-split" aria-hidden="true"></i></div>
             <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:12px;">Not Eligible Yet</h2>
             <p style="color:var(--text-secondary);margin-bottom:24px;font-size:0.95rem;">
               You last donated on <strong>${new Date(u.lastDonation).toLocaleDateString('en-GB')}</strong>.<br/>
@@ -35,7 +35,7 @@ const DonationsComponent = {
               </div>
               <div style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">${Math.max(0, 84 - daysLeft)}/84 days recovery</div>
             </div>
-            <button class="btn btn-secondary" onclick="App.navigate('hospitals')">🏥 Find Hospitals</button>
+            <button class="btn btn-secondary" onclick="App.navigate('hospitals')"><i class="bi bi-hospital" aria-hidden="true"></i> Find Hospitals</button>
           </div>
         </div>
       `;
@@ -70,7 +70,7 @@ const DonationsComponent = {
     const cls = num < this.currentStep ? 'step done' : num === this.currentStep ? 'step active' : 'step';
     return `
       <div class="${cls}">
-        <div class="step-num">${num < this.currentStep ? '✓' : num}</div>
+        <div class="step-num">${num < this.currentStep ? '<i class="bi bi-check" aria-hidden="true"></i>' : num}</div>
         <div class="step-label">${label}</div>
       </div>
     `;
@@ -98,7 +98,7 @@ const DonationsComponent = {
           <span class="badge badge-green">Step 1 of 4</span>
         </div>
         <div class="alert alert-urgent">
-          <div class="alert-icon">ℹ️</div>
+          <div class="alert-icon"><i class="bi bi-info-circle" aria-hidden="true"></i></div>
           <div>
             <div class="alert-title">Please confirm all conditions</div>
             <div class="alert-desc">Check all boxes that apply to you. Your safety is our priority.</div>
@@ -131,13 +131,13 @@ const DonationsComponent = {
         <div class="grid-2" style="gap:12px;margin-bottom:20px">
           ${AppData.hospitals.slice(0, 4).map(h => `
             <div class="hospital-card" id="hCard-${h.id}" onclick="DonationsComponent.selectHospital(${h.id})" style="margin-bottom:0;cursor:pointer;">
-              <div class="hospital-icon">🏥</div>
+              <div class="hospital-icon"><i class="bi bi-hospital" aria-hidden="true"></i></div>
               <div class="hospital-info">
                 <div class="hospital-name">${h.name}</div>
                 <div class="hospital-address">${h.city}</div>
                 <div class="hospital-meta">
-                  <span class="hospital-dist">📍 ${h.distance}</span>
-                  <span class="badge badge-blue">⏰ ${h.availableSlots} slots</span>
+                  <span class="hospital-dist"><i class="bi bi-geo-alt" aria-hidden="true"></i> ${h.distance}</span>
+                  <span class="badge badge-blue"><i class="bi bi-clock" aria-hidden="true"></i> ${h.availableSlots} slots</span>
                 </div>
               </div>
             </div>
@@ -219,16 +219,16 @@ const DonationsComponent = {
         </div>
         <div style="background:var(--bg-elevated);border-radius:var(--radius-md);padding:24px;margin-bottom:20px">
           <div style="display:grid;gap:14px">
-            ${this.confirmRow('🏥 Hospital', hospital.name)}
-            ${this.confirmRow('📍 Address', hospital.address)}
-            ${this.confirmRow('📅 Date', s.date ? new Date(s.date).toLocaleDateString('en-GB', {weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Not selected')}
-            ${this.confirmRow('⏰ Time', s.time || 'Not selected')}
-            ${this.confirmRow('🩸 Blood Type', AppData.currentUser.bloodType)}
-            ${this.confirmRow('💉 Donation Type', 'Whole Blood (450ml)')}
+            ${this.confirmRow('<i class="bi bi-hospital" aria-hidden="true"></i> Hospital', hospital.name)}
+            ${this.confirmRow('<i class="bi bi-geo-alt" aria-hidden="true"></i> Address', hospital.address)}
+            ${this.confirmRow('<i class="bi bi-calendar-event" aria-hidden="true"></i> Date', s.date ? new Date(s.date).toLocaleDateString('en-GB', {weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Not selected')}
+            ${this.confirmRow('<i class="bi bi-clock" aria-hidden="true"></i> Time', s.time || 'Not selected')}
+            ${this.confirmRow('<i class="bi bi-droplet-fill" aria-hidden="true"></i> Blood Type', AppData.currentUser.bloodType)}
+            ${this.confirmRow('<i class="bi bi-eyedropper" aria-hidden="true"></i> Donation Type', 'Whole Blood (450ml)')}
           </div>
         </div>
         <div class="alert alert-urgent">
-          <div class="alert-icon">📋</div>
+          <div class="alert-icon"><i class="bi bi-clipboard2-check" aria-hidden="true"></i></div>
           <div>
             <div class="alert-title">Before you go</div>
             <div class="alert-desc">Drink plenty of water, eat a light meal, and bring a valid ID. Wear comfortable clothing.</div>
@@ -237,7 +237,7 @@ const DonationsComponent = {
         <div style="display:flex;gap:12px;justify-content:space-between">
           <button class="btn btn-secondary" onclick="DonationsComponent.prevStep()">← Back</button>
           <button class="btn btn-primary btn-lg" onclick="DonationsComponent.confirm()">
-            <span class="heartbeat">🩸</span> Confirm Appointment
+            <span class="heartbeat"><i class="bi bi-droplet-fill" aria-hidden="true"></i></span> Confirm Appointment
           </button>
         </div>
       </div>
@@ -265,22 +265,22 @@ const DonationsComponent = {
 
         <div class="grid-4 fade-up delay-1" style="margin-bottom:28px">
           <div class="stat-card">
-            <div class="stat-icon">🩸</div>
+            <div class="stat-icon"><i class="bi bi-droplet-fill" aria-hidden="true"></i></div>
             <div class="stat-label">Total Donations</div>
             <div class="stat-value crimson">${donations.length}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🌟</div>
+            <div class="stat-icon"><i class="bi bi-stars" aria-hidden="true"></i></div>
             <div class="stat-label">Lives Saved</div>
             <div class="stat-value green">${AppData.currentUser.savedLives}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🩺</div>
+            <div class="stat-icon"><i class="bi bi-heart-pulse-fill" aria-hidden="true"></i></div>
             <div class="stat-label">Total Volume</div>
             <div class="stat-value">${donations.length * 450}<span style="font-size:1rem;color:var(--text-muted)">ml</span></div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">📅</div>
+            <div class="stat-icon"><i class="bi bi-calendar2-week-fill" aria-hidden="true"></i></div>
             <div class="stat-label">This Year</div>
             <div class="stat-value">${donations.filter(d => new Date(d.date).getFullYear() === new Date().getFullYear()).length}</div>
           </div>
@@ -300,7 +300,7 @@ const DonationsComponent = {
                   <div class="timeline-content">
                     <div class="timeline-date">${new Date(d.date).toLocaleDateString('en-GB')}</div>
                     <div class="timeline-title">${d.hospital}</div>
-                    <div class="timeline-desc">${d.city} · ${d.volume}ml · <span style="color:var(--green)">✓ Completed</span></div>
+                    <div class="timeline-desc">${d.city} · ${d.volume}ml · <span style="color:var(--green)"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Completed</span></div>
                   </div>
                 </div>
               `).join('')}
@@ -328,7 +328,7 @@ const DonationsComponent = {
                       <td style="font-family:var(--font-mono);font-size:0.78rem">${new Date(d.date).toLocaleDateString('en-GB')}</td>
                       <td style="font-size:0.82rem">${d.hospital.split(' ').slice(0,3).join(' ')}</td>
                       <td><span class="badge badge-red">${d.bloodType}</span></td>
-                      <td>${d.certificate ? '<span class="badge badge-green">✓</span>' : '<span class="badge" style="opacity:0.4">—</span>'}</td>
+                      <td>${d.certificate ? '<span class="badge badge-green"><i class="bi bi-check-lg" aria-hidden="true"></i></span>' : '<span class="badge" style="opacity:0.4">-</span>'}</td>
                     </tr>
                   `).join('')}
                 </tbody>
@@ -347,7 +347,7 @@ const DonationsComponent = {
     const item = document.getElementById(`eli-${i}`);
     const check = document.getElementById(`check-${i}`);
     const isChecked = item.classList.toggle('checked');
-    check.textContent = isChecked ? '✓' : '';
+    check.innerHTML = isChecked ? '<i class="bi bi-check" aria-hidden="true"></i>' : '';
 
     const total = document.querySelectorAll('.eligibility-item').length;
     const checked = document.querySelectorAll('.eligibility-item.checked').length;
@@ -429,7 +429,7 @@ const DonationsComponent = {
     this.currentStep = 1;
     this.selection = {};
 
-    App.showToast('🩸 Appointment confirmed! See you at ' + h.name, 'success');
+    App.showToast('Appointment confirmed! See you at ' + h.name, 'success');
     App.navigate('history');
   },
 };

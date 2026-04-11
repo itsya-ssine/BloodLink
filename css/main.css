@@ -103,6 +103,8 @@ body {
   filter: drop-shadow(0 0 12px var(--crimson));
 }
 
+.logo-drop i { display: block; }
+
 .logo-text {
   font-family: 'Playfair Display', Georgia, serif;
   font-size: 1.3rem;
@@ -167,6 +169,8 @@ body {
   width: 20px;
   text-align: center;
 }
+
+.nav-icon i { display: block; }
 
 .sidebar-user {
   display: flex;
@@ -234,6 +238,8 @@ body {
   cursor: pointer;
   padding: 4px;
 }
+
+.menu-btn i { display: block; }
 
 .mobile-actions {
   display: flex;

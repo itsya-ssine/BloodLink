@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="stylesheet" href="css/components.css"/>
@@ -22,27 +23,27 @@
     </div>
     <nav class="sidebar-nav">
       <a href="#" class="nav-item active" data-page="dashboard">
-        <span class="nav-icon">⬡</span> Dashboard
+        <span class="nav-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span> Dashboard
       </a>
       <a href="#" class="nav-item" data-page="profile">
-        <span class="nav-icon">◈</span> My Profile
+        <span class="nav-icon"><i class="bi bi-person-badge-fill" aria-hidden="true"></i></span> My Profile
       </a>
       <a href="#" class="nav-item" data-page="donate">
-        <span class="nav-icon">♥</span> Donate Blood
+        <span class="nav-icon"><i class="bi bi-heart-pulse-fill" aria-hidden="true"></i></span> Donate Blood
       </a>
       <a href="#" class="nav-item" data-page="history">
-        <span class="nav-icon">◷</span> History
+        <span class="nav-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span> History
       </a>
       <a href="#" class="nav-item" data-page="hospitals">
-        <span class="nav-icon">✛</span> Hospitals Map
+        <span class="nav-icon"><i class="bi bi-hospital-fill" aria-hidden="true"></i></span> Hospitals Map
       </a>
       <a href="#" class="nav-item" data-page="requests">
-        <span class="nav-icon">◉</span> Blood Requests
+        <span class="nav-icon"><i class="bi bi-megaphone-fill" aria-hidden="true"></i></span> Blood Requests
       </a>
     </nav>
     <div class="sidebar-tools">
       <button class="theme-toggle" data-theme-toggle aria-label="Switch theme" title="Switch theme">
-        <span class="theme-icon" aria-hidden="true">☀</span>
+        <i class="bi bi-sun-fill theme-icon" aria-hidden="true"></i>
       </button>
     </div>
     <div class="sidebar-user">
@@ -56,11 +57,11 @@
 
   <!-- MOBILE HEADER -->
   <header class="mobile-header">
-    <button class="menu-btn" id="menuBtn">☰</button>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu"><i class="bi bi-list" aria-hidden="true"></i></button>
     <span class="logo-text">Blood<strong>Link</strong></span>
     <div class="mobile-actions">
       <button class="theme-toggle compact" data-theme-toggle aria-label="Switch theme" title="Switch theme">
-        <span class="theme-icon" aria-hidden="true">☀</span>
+        <i class="bi bi-sun-fill theme-icon" aria-hidden="true"></i>
       </button>
       <div class="user-avatar small" id="mobileAvatar">AK</div>
     </div>

@@ -161,16 +161,16 @@ const AppData = {
 
   // ---- ALL ACHIEVEMENTS ----
   achievements: [
-    { id: "first_drop",    icon: "🩸", name: "First Drop",     desc: "Made your first donation",         earned: true },
-    { id: "triple_crown",  icon: "👑", name: "Triple Crown",   desc: "Donated 3 times",                  earned: true },
-    { id: "life_saver",    icon: "🌟", name: "Life Saver",     desc: "Saved 10+ lives",                  earned: true },
-    { id: "gold_heart",    icon: "💛", name: "Gold Heart",     desc: "Reached Gold Donor level",         earned: true },
-    { id: "regular_hero",  icon: "⚡", name: "Regular Hero",   desc: "Donated 5 times in a year",        earned: true },
-    { id: "century",       icon: "💯", name: "Century Club",   desc: "10 total donations",               earned: false },
-    { id: "rare_type",     icon: "💎", name: "Rare Type",      desc: "Rare blood type donation",         earned: false },
-    { id: "community",     icon: "🤝", name: "Community Star", desc: "Referred 3 new donors",            earned: false },
-    { id: "emergency",     icon: "🚨", name: "Emergency Hero", desc: "Responded to critical request",   earned: false },
-    { id: "platinum",      icon: "🏆", name: "Platinum Donor", desc: "20 total donations",              earned: false },
+    { id: "first_drop",    icon: "<i class=\"bi bi-droplet-fill\" style=\"color:#E8233D\" aria-hidden=\"true\"></i>", name: "First Drop",     desc: "Made your first donation",         earned: true },
+    { id: "triple_crown",  icon: "<i class=\"bi bi-award-fill\" style=\"color:#F4B63E\" aria-hidden=\"true\"></i>", name: "Triple Crown",   desc: "Donated 3 times",                  earned: true },
+    { id: "life_saver",    icon: "<i class=\"bi bi-stars\" style=\"color:#42C98A\" aria-hidden=\"true\"></i>", name: "Life Saver",     desc: "Saved 10+ lives",                  earned: true },
+    { id: "gold_heart",    icon: "<i class=\"bi bi-heart-fill\" style=\"color:#F7C948\" aria-hidden=\"true\"></i>", name: "Gold Heart",     desc: "Reached Gold Donor level",         earned: true },
+    { id: "regular_hero",  icon: "<i class=\"bi bi-lightning-fill\" style=\"color:#5EA5FF\" aria-hidden=\"true\"></i>", name: "Regular Hero",   desc: "Donated 5 times in a year",        earned: true },
+    { id: "century",       icon: "<i class=\"bi bi-123\" style=\"color:#B886F9\" aria-hidden=\"true\"></i>", name: "Century Club",   desc: "10 total donations",               earned: false },
+    { id: "rare_type",     icon: "<i class=\"bi bi-gem\" style=\"color:#37C8E8\" aria-hidden=\"true\"></i>", name: "Rare Type",      desc: "Rare blood type donation",         earned: false },
+    { id: "community",     icon: "<i class=\"bi bi-people-fill\" style=\"color:#6EC0FF\" aria-hidden=\"true\"></i>", name: "Community Star", desc: "Referred 3 new donors",            earned: false },
+    { id: "emergency",     icon: "<i class=\"bi bi-exclamation-triangle-fill\" style=\"color:#FF8A47\" aria-hidden=\"true\"></i>", name: "Emergency Hero", desc: "Responded to critical request",   earned: false },
+    { id: "platinum",      icon: "<i class=\"bi bi-trophy-fill\" style=\"color:#A2ACC2\" aria-hidden=\"true\"></i>", name: "Platinum Donor", desc: "20 total donations",              earned: false },
   ],
 
   // ---- BLOOD TYPES ----

@@ -22,9 +22,9 @@ const MapComponent = {
                 <span class="card-title" style="flex:1">Interactive Hospital Map</span>
                 <div class="tab-bar" style="margin-bottom:0">
                   <button class="tab-btn ${filterUrgency==='all'?'active':''}" onclick="MapComponent.filterMap('all')">All</button>
-                  <button class="tab-btn ${filterUrgency==='critical'?'active':''}" onclick="MapComponent.filterMap('critical')">🔴 Critical</button>
-                  <button class="tab-btn ${filterUrgency==='high'?'active':''}" onclick="MapComponent.filterMap('high')">🟠 High</button>
-                  <button class="tab-btn ${filterUrgency==='medium'?'active':''}" onclick="MapComponent.filterMap('medium')">🟡 Medium</button>
+                  <button class="tab-btn ${filterUrgency==='critical'?'active':''}" onclick="MapComponent.filterMap('critical')"><i class="bi bi-circle-fill" style="color:#E8233D" aria-hidden="true"></i> Critical</button>
+                  <button class="tab-btn ${filterUrgency==='high'?'active':''}" onclick="MapComponent.filterMap('high')"><i class="bi bi-circle-fill" style="color:#E8943A" aria-hidden="true"></i> High</button>
+                  <button class="tab-btn ${filterUrgency==='medium'?'active':''}" onclick="MapComponent.filterMap('medium')"><i class="bi bi-circle-fill" style="color:#E8D43A" aria-hidden="true"></i> Medium</button>
                 </div>
               </div>
               <div id="map"></div>
@@ -55,14 +55,14 @@ const MapComponent = {
     const urgencyColor = { critical: 'badge-red', high: 'badge-red', medium: 'badge-amber', low: 'badge-green' };
     return `
       <div class="hospital-card" onclick="MapComponent.flyTo(${h.lat}, ${h.lng}, '${h.name}')">
-        <div class="hospital-icon">🏥</div>
+        <div class="hospital-icon"><i class="bi bi-hospital" aria-hidden="true"></i></div>
         <div class="hospital-info">
           <div class="hospital-name">${h.name}</div>
           <div class="hospital-address">${h.address}</div>
           <div class="hospital-meta">
-            <span class="hospital-dist">📍 ${h.distance}</span>
+            <span class="hospital-dist"><i class="bi bi-geo-alt" aria-hidden="true"></i> ${h.distance}</span>
             <span class="badge ${urgencyColor[h.urgency]}">${h.urgency}</span>
-            <span class="badge badge-blue">⏰ ${h.availableSlots} slots</span>
+            <span class="badge badge-blue"><i class="bi bi-clock" aria-hidden="true"></i> ${h.availableSlots} slots</span>
           </div>
           <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">
             ${h.bloodNeeded.map(b => `<span class="badge badge-red" style="font-size:0.65rem;padding:2px 6px;">${b}</span>`).join('')}
@@ -129,7 +129,12 @@ const MapComponent = {
     this.markers.forEach(m => this.map.removeLayer(m));
     this.markers = [];
 
-    const urgencyEmoji = { critical: '🔴', high: '🟠', medium: '🟡', low: '🟢' };
+    const urgencyIcon = {
+      critical: '<i class="bi bi-circle-fill" style="color:#E8233D" aria-hidden="true"></i>',
+      high: '<i class="bi bi-circle-fill" style="color:#E8943A" aria-hidden="true"></i>',
+      medium: '<i class="bi bi-circle-fill" style="color:#E8D43A" aria-hidden="true"></i>',
+      low: '<i class="bi bi-circle-fill" style="color:#1DB97A" aria-hidden="true"></i>',
+    };
 
     AppData.hospitals
       .filter(h => filterUrgency === 'all' || h.urgency === filterUrgency)
@@ -151,10 +156,10 @@ const MapComponent = {
           .addTo(this.map)
           .bindPopup(`
             <div class="map-popup">
-              <h4>${urgencyEmoji[h.urgency]} ${h.name}</h4>
-              <p>📍 ${h.address}</p>
-              <p>📞 ${h.phone}</p>
-              <p>🕐 ${h.hours}</p>
+              <h4>${urgencyIcon[h.urgency]} ${h.name}</h4>
+              <p><i class="bi bi-geo-alt" aria-hidden="true"></i> ${h.address}</p>
+              <p><i class="bi bi-telephone" aria-hidden="true"></i> ${h.phone}</p>
+              <p><i class="bi bi-clock" aria-hidden="true"></i> ${h.hours}</p>
               <p><strong>Blood needed:</strong> ${h.bloodNeeded.join(', ')}</p>
               <p><strong>Available slots:</strong> ${h.availableSlots}</p>
             </div>
@@ -179,7 +184,7 @@ const MapComponent = {
 
     L.marker([32.8897, -6.9060], { icon: userIcon })
       .addTo(this.map)
-      .bindPopup('<div class="map-popup"><h4>📍 Your Location</h4><p>Khouribga</p></div>');
+      .bindPopup('<div class="map-popup"><h4><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> Your Location</h4><p>Khouribga</p></div>');
   },
 
   flyTo(lat, lng, name) {

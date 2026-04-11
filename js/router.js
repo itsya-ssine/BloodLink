@@ -53,9 +53,9 @@ const Router = {
           <div class="hero-title">Hello, <em>${u.firstName}</em>.<br/>Ready to save lives?</div>
           <div class="hero-cta">
             ${eligible
-              ? `<button class="btn btn-primary btn-lg" onclick="App.navigate('donate')"><span class="heartbeat">🩸</span> Donate Now</button>`
-              : `<button class="btn btn-secondary btn-lg" onclick="App.navigate('donate')">⏳ Eligible in ${daysLeft} days</button>`}
-            <button class="btn btn-ghost btn-lg" onclick="App.navigate('hospitals')">🏥 Find Center</button>
+              ? `<button class="btn btn-primary btn-lg" onclick="App.navigate('donate')"><span class="heartbeat"><i class="bi bi-droplet-fill" aria-hidden="true"></i></span> Donate Now</button>`
+              : `<button class="btn btn-secondary btn-lg" onclick="App.navigate('donate')"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Eligible in ${daysLeft} days</button>`}
+            <button class="btn btn-ghost btn-lg" onclick="App.navigate('hospitals')"><i class="bi bi-hospital" aria-hidden="true"></i> Find Center</button>
           </div>
           <div class="hero-stats">
             <div>
@@ -80,22 +80,22 @@ const Router = {
         <!-- Global Stats -->
         <div class="grid-4 fade-up delay-1" style="margin-bottom:28px">
           <div class="stat-card">
-            <div class="stat-icon">👥</div>
+            <div class="stat-icon"><i class="bi bi-people-fill" aria-hidden="true"></i></div>
             <div class="stat-label">Total Donors</div>
             <div class="stat-value">${g.totalDonors.toLocaleString()}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🩸</div>
+            <div class="stat-icon"><i class="bi bi-droplet-fill" aria-hidden="true"></i></div>
             <div class="stat-label">This Month</div>
             <div class="stat-value crimson">${g.donationsThisMonth}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🌟</div>
+            <div class="stat-icon"><i class="bi bi-stars" aria-hidden="true"></i></div>
             <div class="stat-label">Lives This Year</div>
             <div class="stat-value green">${g.livesThisYear.toLocaleString()}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🏥</div>
+            <div class="stat-icon"><i class="bi bi-hospital-fill" aria-hidden="true"></i></div>
             <div class="stat-label">Partner Hospitals</div>
             <div class="stat-value">${g.hospitalsNetwork}</div>
           </div>
@@ -105,7 +105,7 @@ const Router = {
           <!-- Critical Requests -->
           <div class="card">
             <div class="card-header">
-              <span class="card-title">🆘 Urgent Requests Near You</span>
+              <span class="card-title"><i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i> Urgent Requests Near You</span>
               <button class="btn btn-ghost btn-sm" onclick="App.navigate('requests')">View All</button>
             </div>
             ${criticalRequests.map(r => `
@@ -119,19 +119,19 @@ const Router = {
               </div>
             `).join('')}
             <button class="btn btn-primary" style="width:100%;margin-top:16px;justify-content:center" onclick="App.navigate('requests')">
-              ❤️ Respond to Requests
+              <i class="bi bi-heart-fill" aria-hidden="true"></i> Respond to Requests
             </button>
           </div>
 
           <!-- Nearby Hospitals -->
           <div class="card">
             <div class="card-header">
-              <span class="card-title">🏥 Nearby Donation Centers</span>
+              <span class="card-title"><i class="bi bi-hospital" aria-hidden="true"></i> Nearby Donation Centers</span>
               <button class="btn btn-ghost btn-sm" onclick="App.navigate('hospitals')">View Map</button>
             </div>
             ${nearbyHospitals.map(h => `
               <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)">
-                <div style="width:40px;height:40px;border-radius:10px;background:rgba(192,21,42,0.1);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🏥</div>
+                <div style="width:40px;height:40px;border-radius:10px;background:rgba(192,21,42,0.1);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0"><i class="bi bi-hospital" aria-hidden="true"></i></div>
                 <div style="flex:1;min-width:0">
                   <div style="font-size:0.875rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.name}</div>
                   <div style="font-size:0.78rem;color:var(--text-muted)">${h.distance} · ${h.availableSlots} slots</div>
@@ -140,7 +140,7 @@ const Router = {
               </div>
             `).join('')}
             <button class="btn btn-secondary" style="width:100%;margin-top:16px;justify-content:center" onclick="App.navigate('hospitals')">
-              📍 Open Map
+              <i class="bi bi-geo-alt-fill" aria-hidden="true"></i> Open Map
             </button>
           </div>
         </div>
@@ -171,7 +171,7 @@ const Router = {
                     <td style="color:var(--text-muted)">${d.city}</td>
                     <td><span class="badge badge-red">${d.bloodType}</span></td>
                     <td style="font-family:var(--font-mono)">${d.volume}ml</td>
-                    <td><span class="badge badge-green">✓ Completed</span></td>
+                    <td><span class="badge badge-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Completed</span></td>
                   </tr>
                 `).join('')}
               </tbody>

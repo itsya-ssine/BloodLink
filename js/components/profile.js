@@ -22,7 +22,7 @@ const ProfileComponent = {
         <!-- Profile Card -->
         <div class="profile-cover-inner fade-up delay-1">
           <div class="profile-cover">
-            <div style="position:absolute;top:50%;right:40px;transform:translateY(-50%);opacity:0.15;font-size:5rem;">🩸</div>
+            <div style="position:absolute;top:50%;right:40px;transform:translateY(-50%);opacity:0.15;font-size:5rem;"><i class="bi bi-droplet-fill" aria-hidden="true"></i></div>
           </div>
           <div class="profile-identity">
             <div class="profile-avatar-large">${u.initials}</div>
@@ -30,12 +30,12 @@ const ProfileComponent = {
               <div class="profile-name">${u.fullName}</div>
               <div class="profile-role">${u.level} · Member since ${new Date(u.joinDate).getFullYear()}</div>
               <div class="profile-badges">
-                <span class="badge badge-red">🩸 ${u.bloodType}</span>
-                <span class="badge badge-green">✓ Verified Donor</span>
-                ${eligibleNow ? '<span class="badge badge-green pulse-red">● Eligible Now</span>' : `<span class="badge badge-amber">⏳ ${daysUntil}d until eligible</span>`}
+                <span class="badge badge-red"><i class="bi bi-droplet-fill" aria-hidden="true"></i> ${u.bloodType}</span>
+                <span class="badge badge-green"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Verified Donor</span>
+                ${eligibleNow ? '<span class="badge badge-green pulse-red"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Eligible Now</span>' : `<span class="badge badge-amber"><i class="bi bi-hourglass-split" aria-hidden="true"></i> ${daysUntil}d until eligible</span>`}
               </div>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="ProfileComponent.openEditModal()">✎ Edit Profile</button>
+            <button class="btn btn-secondary btn-sm" onclick="ProfileComponent.openEditModal()"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit Profile</button>
           </div>
           <div class="profile-stats-row">
             <div class="profile-stat">
@@ -63,7 +63,7 @@ const ProfileComponent = {
             ${this.infoRow("Full Name", u.fullName)}
             ${this.infoRow("Date of Birth", `${new Date(u.dateOfBirth).toLocaleDateString('en-GB')} (Age ${age})`)}
             ${this.infoRow("Gender", u.gender)}
-            ${this.infoRow("Blood Type", `<span class="badge badge-red">🩸 ${u.bloodType}</span>`)}
+            ${this.infoRow("Blood Type", `<span class="badge badge-red"><i class="bi bi-droplet-fill" aria-hidden="true"></i> ${u.bloodType}</span>`)}
             ${this.infoRow("Weight", `${u.weight} kg`)}
             ${this.infoRow("City", u.city)}
             ${this.infoRow("Address", u.address)}
@@ -94,7 +94,7 @@ const ProfileComponent = {
         <div class="card fade-up delay-4" style="margin-top:20px">
           <div class="card-header">
             <span class="card-title">Achievements</span>
-            <span class="badge badge-amber">🏆 ${u.achievements.length}/${AppData.achievements.length} Earned</span>
+            <span class="badge badge-amber"><i class="bi bi-trophy-fill" aria-hidden="true"></i> ${u.achievements.length}/${AppData.achievements.length} Earned</span>
           </div>
           <div class="achievements-grid">
             ${AppData.achievements.map(a => `
@@ -143,7 +143,7 @@ const ProfileComponent = {
           </div>
           <div class="modal-actions">
             <button class="btn btn-secondary" onclick="ProfileComponent.closeEditModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="ProfileComponent.saveProfile()">💾 Save Changes</button>
+            <button class="btn btn-primary" onclick="ProfileComponent.saveProfile()"><i class="bi bi-floppy-fill" aria-hidden="true"></i> Save Changes</button>
           </div>
         </div>
       </div>
