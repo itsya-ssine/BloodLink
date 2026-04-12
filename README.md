@@ -9,7 +9,13 @@ A professional, fully-featured blood donation web application built with vanilla
 ```
 bloodlink/
 ├── index.html                  # Main entry point (SPA shell)
-├── schema.sql                  # PostgreSQL schema
+├── database/
+│   ├── schema.sql              # Base PostgreSQL schema
+│   ├── migrations/
+│   │   └── auth-schema.sql     # Auth/account migration
+│   └── seeds/
+│       ├── seed.sql            # Minimal startup data
+│       └── seed-all.sql        # Full AppData seed
 ├── css/
 │   ├── main.css                # Global styles, layout, typography
 │   ├── components.css          # Component-specific styles
@@ -57,13 +63,16 @@ npx serve .
 ### Option 3 — Run with PHP backend API
 ```bash
 # 1) Create database from schema
-psql -U postgres -d bloodlink -f schema.sql
+psql -U postgres -d bloodlink -f database/schema.sql
 
 # 1.1) Seed minimal startup data
-psql -U postgres -d bloodlink -f seed.sql
+psql -U postgres -d bloodlink -f database/seeds/seed.sql
 
 # Optional: load the complete AppData dataset
-psql -U postgres -d bloodlink -f seed-all.sql
+psql -U postgres -d bloodlink -f database/seeds/seed-all.sql
+
+# Optional: apply auth/account migration on existing DBs
+psql -U postgres -d bloodlink -f database/migrations/auth-schema.sql
 
 # 2) Configure backend env
 cp backend/.env.example backend/.env

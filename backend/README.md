@@ -27,10 +27,10 @@ Important variables:
 
 ## 3) Create database schema
 
-Use the schema in [../schema.sql](../schema.sql):
+Use the schema in [../database/schema.sql](../database/schema.sql):
 
 ```bash
-psql -U postgres -d bloodlink -f schema.sql
+psql -U postgres -d bloodlink -f database/schema.sql
 ```
 
 ## 4) Run API
