@@ -242,6 +242,8 @@ const App = {
   },
 };
 
+window.App = App;
+
 // ---- BOOT ----
 document.addEventListener('DOMContentLoaded', async () => {
   await App.init();

@@ -68,10 +68,31 @@ const AuthComponent = (() => {
         <label class="auth-span-2"><span>Email</span><input type="email" name="email" required></label>
         <label><span>Password</span><input type="password" name="password" minlength="8" required></label>
         <label><span>Confirm password</span><input type="password" name="password_confirmation" minlength="8" required></label>
-        <label><span>Phone</span><input type="tel" name="phone" placeholder="+1 555 123 4567"></label>
-        <label><span>Blood type</span><input type="text" name="blood_type_code" placeholder="O+" required></label>
+        <label><span>Phone</span><input type="tel" name="phone" placeholder="+1 555 123 4567" required></label>
+        <label>
+          <span>Blood type</span>
+          <select name="blood_type_code" required>
+            <option value="">Select blood type</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+          </select>
+        </label>
         <label><span>Date of birth</span><input type="date" name="date_of_birth" required></label>
-        <label><span>Gender</span><input type="text" name="gender" placeholder="Female"></label>
+        <label>
+          <span>Gender</span>
+          <select name="gender" required>
+            <option value="">Select gender</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
         <label><span>Weight (kg)</span><input type="number" name="weight_kg" min="30" step="0.1" required></label>
         <label><span>City</span><input type="text" name="city" required></label>
         <label class="auth-span-2"><span>Address</span><input type="text" name="address" required></label>

@@ -4,7 +4,7 @@ A professional, fully-featured blood donation web application built with vanilla
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 bloodlink/
@@ -37,7 +37,7 @@ bloodlink/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Option 1 — Open directly in browser
 Simply double-click `index.html`. No build step required.
@@ -81,7 +81,7 @@ Then open `http://localhost:3000` in your browser.
 
 ---
 
-## ✨ Features
+## Features
 
 | Page | Features |
 |------|----------|
@@ -94,7 +94,7 @@ Then open `http://localhost:3000` in your browser.
 
 ---
 
-## 🎨 Design System
+## Design System
 
 - **Fonts**: Playfair Display (headings) + DM Sans (body) + DM Mono (data)
 - **Colors**: Deep crimson `#C0152A` on void black `#0A0A0C`
@@ -103,7 +103,7 @@ Then open `http://localhost:3000` in your browser.
 
 ---
 
-## 🛠 Technologies Used
+## Technologies Used
 
 - **HTML5** — Semantic markup
 - **CSS3** — Custom properties, Grid, Flexbox, animations
@@ -113,7 +113,7 @@ Then open `http://localhost:3000` in your browser.
 
 ---
 
-## 📐 Architecture
+## Architecture
 
 The app follows a **component-based SPA pattern**:
 - `Router` handles page navigation and renders HTML strings into `#mainContent`
@@ -123,7 +123,7 @@ The app follows a **component-based SPA pattern**:
 
 ---
 
-## 🌍 Localization
+## Localization
 
 The app is pre-configured for **Morocco (Khouribga region)**:
 - Map centered on Khouribga coordinates
