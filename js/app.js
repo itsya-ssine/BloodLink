@@ -110,8 +110,20 @@ const App = {
     document.body.classList.remove('auth-mode');
   },
 
-  async loadApp() {
-    const data = await window.BloodLinkApi.getInitialData();
+  async loadApp(loginResult = null) {
+    const authState = loginResult && loginResult.user
+      ? {
+          authenticated: true,
+          csrf_token: loginResult.csrf_token || null,
+          user: loginResult.user,
+        }
+      : null;
+
+    if (authState?.csrf_token) {
+      window.BloodLinkApi.setCsrfToken(authState.csrf_token);
+    }
+
+    const data = await window.BloodLinkApi.getInitialData(authState);
     if (!data.authenticated) {
       this.renderAuthScreen('login');
       return;

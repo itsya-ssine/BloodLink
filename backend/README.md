@@ -22,6 +22,7 @@ Important variables:
 - `PUBLIC_API_BASE_URL` for frontend runtime API base URL
 - `SESSION_NAME`, `SESSION_SECURE_COOKIE`, `SESSION_SAMESITE` for session auth
 - `APP_URL`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME` for auth links and mail metadata
+- `MAIL_LOG_ONLY=false` to send real emails, or `true` to only log mail content during development
 - `CORS_ALLOWED_ORIGINS` to allow frontend origins
 - In `APP_ENV=development`, any `localhost` or `127.0.0.1` origin is allowed automatically
 

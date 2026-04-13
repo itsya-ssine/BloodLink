@@ -52,8 +52,8 @@ const BloodLinkApi = (() => {
   }
 
   function mapUser(row) {
-    const firstName = row.first_name || '';
-    const lastName = row.last_name || '';
+    const firstName = row.first_name || row.firstName || '';
+    const lastName = row.last_name || row.lastName || '';
     const fullName = `${firstName} ${lastName}`.trim();
 
     return {
@@ -64,26 +64,26 @@ const BloodLinkApi = (() => {
       initials: `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase(),
       email: row.email || '',
       phone: row.phone || '',
-      bloodType: row.blood_type_code || '',
-      dateOfBirth: row.date_of_birth || '',
-      age: calcAge(row.date_of_birth),
+      bloodType: row.blood_type_code || row.bloodType || '',
+      dateOfBirth: row.date_of_birth || row.dateOfBirth || '',
+      age: calcAge(row.date_of_birth || row.dateOfBirth),
       gender: row.gender || '',
       weight: row.weight_kg ? Number(row.weight_kg) : 0,
       city: row.city || '',
       address: row.address || '',
-      joinDate: row.join_date || '',
-      totalDonations: Number(row.total_donations || 0),
-      lastDonation: row.last_donation_date || '',
-      nextEligible: row.next_eligible_date || '',
-      savedLives: Number(row.saved_lives || 0),
+      joinDate: row.join_date || row.joinDate || '',
+      totalDonations: Number(row.total_donations || row.totalDonations || 0),
+      lastDonation: row.last_donation_date || row.lastDonation || '',
+      nextEligible: row.next_eligible_date || row.nextEligible || '',
+      savedLives: Number(row.saved_lives || row.savedLives || 0),
       points: Number(row.points || 0),
-      level: row.donor_level || 'Donor',
-      eligible: Boolean(row.is_eligible),
-      medicalConditions: Array.isArray(row.medical_conditions) ? row.medical_conditions : [],
+      level: row.donor_level || row.level || 'Donor',
+      eligible: Boolean(row.is_eligible ?? row.eligible),
+      medicalConditions: Array.isArray(row.medical_conditions) ? row.medical_conditions : (Array.isArray(row.medicalConditions) ? row.medicalConditions : []),
       emergencyContact: {
-        name: row.emergency_contact?.full_name || '',
-        phone: row.emergency_contact?.phone || '',
-        relation: row.emergency_contact?.relation || '',
+        name: row.emergency_contact?.full_name || row.emergencyContact?.name || '',
+        phone: row.emergency_contact?.phone || row.emergencyContact?.phone || '',
+        relation: row.emergency_contact?.relation || row.emergencyContact?.relation || '',
       },
       achievements: Array.isArray(row.achievements) ? row.achievements : [],
       role: row.role || 'user',
@@ -225,8 +225,11 @@ const BloodLinkApi = (() => {
     return result;
   }
 
-  async function verifyEmail(token) {
-    return request(`/auth/verify-email?token=${encodeURIComponent(token)}`);
+  async function verifyEmail(code) {
+    return request('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
   }
 
   async function requestEmailVerification(payload = {}) {

@@ -187,8 +187,8 @@ final class AuthService
             throw new AuthException('Email is already registered', 409);
         }
 
-        $verificationToken = $this->generateToken();
-        $verificationTokenHash = hash('sha256', $verificationToken);
+        $verificationCode = $this->generateVerificationCode();
+        $verificationTokenHash = hash('sha256', $verificationCode);
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
         $stmt = $this->db->prepare(
@@ -248,12 +248,12 @@ final class AuthService
                 ]);
         }
 
-        $this->sendVerificationNotice($email, $verificationToken);
+        $this->sendVerificationNotice($email, $verificationCode);
 
         return [
             'message' => 'Account created. Please verify your email address.',
             'user_id' => $userId,
-            'verification_link' => getenv('APP_ENV') === 'development' ? '/api/auth/verify-email?token=' . urlencode($verificationToken) : null,
+            'verification_link' => getenv('APP_ENV') === 'development' ? '/api/auth/verify-email?token=' . urlencode($verificationCode) : null,
         ];
     }
 
@@ -261,7 +261,7 @@ final class AuthService
     {
         $token = trim($token);
         if ($token === '') {
-            throw new AuthException('Verification token is required', 422);
+            throw new AuthException('Verification code is required', 422);
         }
 
         $stmt = $this->db->prepare('SELECT id, email_verification_expires_at FROM users WHERE email_verification_token_hash = :hash AND deleted_at IS NULL LIMIT 1');
@@ -269,11 +269,11 @@ final class AuthService
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new AuthException('Invalid or expired verification token', 400);
+            throw new AuthException('Invalid or expired verification code', 400);
         }
 
         if (!empty($row['email_verification_expires_at']) && new DateTimeImmutable((string) $row['email_verification_expires_at']) < new DateTimeImmutable()) {
-            throw new AuthException('Verification token expired', 400);
+            throw new AuthException('Verification code expired', 400);
         }
 
         $this->db->prepare('UPDATE users SET email_verified_at = NOW(), email_verification_token_hash = NULL, email_verification_expires_at = NULL, updated_at = NOW() WHERE id = :id')
@@ -304,7 +304,7 @@ final class AuthService
             return ['status' => 'already_verified'];
         }
 
-        $token = $this->generateToken();
+        $token = $this->generateVerificationCode();
         $this->db->prepare('UPDATE users SET email_verification_token_hash = :hash, email_verification_expires_at = :expires, updated_at = NOW() WHERE id = :id')
             ->execute([
                 'hash' => hash('sha256', $token),
@@ -470,7 +470,7 @@ final class AuthService
             ];
 
             if ($emailChanged) {
-                $verificationToken = $this->generateToken();
+                $verificationToken = $this->generateVerificationCode();
                 $params['verification_hash'] = hash('sha256', $verificationToken);
                 $params['verification_expires'] = (new DateTimeImmutable('+24 hours'))->format('Y-m-d H:i:sP');
             }
@@ -757,11 +757,15 @@ final class AuthService
         return bin2hex(random_bytes($bytes));
     }
 
-    private function sendVerificationNotice(string $email, string $token): void
+    private function generateVerificationCode(): string
     {
-        $link = $this->verificationLink($token);
+        return str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function sendVerificationNotice(string $email, string $code): void
+    {
         $subject = 'Verify your BloodLink email';
-        $message = "Verify your email: {$link}";
+        $message = "Your BloodLink verification code is: {$code}\n\nEnter this code in the app to verify your email. This code expires in 24 hours.";
         $this->deliverMail($email, $subject, $message);
     }
 
@@ -775,8 +779,13 @@ final class AuthService
 
     private function deliverMail(string $to, string $subject, string $message): void
     {
-        if (getenv('APP_ENV') === 'development') {
+        $logOnly = getenv('MAIL_LOG_ONLY') === 'true';
+
+        if (getenv('APP_ENV') === 'development' || $logOnly) {
             error_log(sprintf('[BloodLink mail] To: %s | Subject: %s | %s', $to, $subject, $message));
+        }
+
+        if ($logOnly) {
             return;
         }
 

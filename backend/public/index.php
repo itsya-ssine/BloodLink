@@ -73,12 +73,12 @@ function notFound(): never
     Response::json(['error' => 'Not Found'], 404);
 }
 
-function authResponse(callable $handler): never
+function authResponse(callable $handler, bool $requireCsrf = true): never
 {
     global $auth, $method;
 
     try {
-        if (!in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+        if ($requireCsrf && !in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
             $auth->validateCsrf($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null);
         }
 
@@ -109,13 +109,13 @@ if ($path === '/auth/me' && $method === 'GET') {
 if ($path === '/auth/register' && $method === 'POST') {
     authResponse(static function () use ($auth): void {
         Response::json($auth->register(body()), 201);
-    });
+    }, false);
 }
 
 if ($path === '/auth/login' && $method === 'POST') {
     authResponse(static function () use ($auth): void {
         Response::json($auth->login(body()));
-    });
+    }, false);
 }
 
 if ($path === '/auth/logout' && $method === 'POST') {
@@ -128,12 +128,13 @@ if ($path === '/auth/logout' && $method === 'POST') {
 if ($path === '/auth/verify-email/request' && $method === 'POST') {
     authResponse(static function () use ($auth): void {
         Response::json($auth->requestEmailVerification(body()));
-    });
+    }, false);
 }
 
 if ($path === '/auth/verify-email' && in_array($method, ['GET', 'POST'], true)) {
     authResponse(static function () use ($auth): void {
-        $token = $_GET['token'] ?? (body()['token'] ?? '');
+        $payload = body();
+        $token = $_GET['token'] ?? ($payload['code'] ?? ($payload['token'] ?? ''));
         Response::json($auth->verifyEmail((string) $token));
     });
 }
@@ -141,7 +142,7 @@ if ($path === '/auth/verify-email' && in_array($method, ['GET', 'POST'], true)) 
 if ($path === '/auth/password/forgot' && $method === 'POST') {
     authResponse(static function () use ($auth): void {
         Response::json($auth->forgotPassword(body()));
-    });
+    }, false);
 }
 
 if ($path === '/auth/password/reset' && in_array($method, ['GET', 'POST'], true)) {
@@ -157,7 +158,7 @@ if ($path === '/auth/password/reset' && in_array($method, ['GET', 'POST'], true)
         }
 
         Response::json($auth->resetPassword($payload));
-    });
+    }, false);
 }
 
 if ($path === '/auth/2fa/setup' && $method === 'POST') {

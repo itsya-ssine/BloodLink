@@ -255,7 +255,7 @@ const ProfileComponent = {
   async requestVerification() {
     try {
       const result = await BloodLinkApi.requestEmailVerification();
-      const message = result.verification_link ? `Verification link: ${result.verification_link}` : 'Verification email sent.';
+      const message = result.verification_link ? `Verification code sent. Debug verify URL: ${result.verification_link}` : 'Verification code sent to your email.';
       App.showToast(message, 'success');
     } catch (error) {
       App.showToast(error.message || 'Unable to request verification', 'error');

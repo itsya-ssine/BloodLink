@@ -128,8 +128,8 @@ const AuthComponent = (() => {
     return shell(`
       <form class="auth-form" id="authVerifyForm">
         <label>
-          <span>Verification token</span>
-          <input type="text" name="token" placeholder="Token from email" required>
+          <span>Verification code</span>
+          <input type="text" name="code" inputmode="numeric" maxlength="6" placeholder="6-digit code from email" required>
         </label>
         <button type="submit" class="auth-submit">Verify email</button>
       </form>
@@ -193,8 +193,8 @@ const AuthComponent = (() => {
         const submit = loginForm.querySelector('button[type="submit"]');
         setBusy(submit, true);
         try {
-          await BloodLinkApi.login(Object.fromEntries(form.entries()));
-          await window.App.loadApp();
+          const loginResult = await BloodLinkApi.login(Object.fromEntries(form.entries()));
+          await window.App.loadApp(loginResult);
         } catch (error) {
           showMessage(error.message || 'Unable to sign in');
         } finally {
@@ -217,7 +217,7 @@ const AuthComponent = (() => {
         setBusy(submit, true);
         try {
           const result = await BloodLinkApi.register(payload);
-          const message = result.verification_link ? `Account created. Verify your email: ${result.verification_link}` : 'Account created. Check your inbox to verify your email.';
+          const message = 'Account created. Check your email for the 6-digit verification code.';
           showMessage(message, 'login');
         } catch (error) {
           showMessage(error.message || 'Unable to create account', 'register');
@@ -254,7 +254,7 @@ const AuthComponent = (() => {
         const submit = verifyForm.querySelector('button[type="submit"]');
         setBusy(submit, true);
         try {
-          const result = await BloodLinkApi.verifyEmail(payload.token);
+          const result = await BloodLinkApi.verifyEmail(payload.code);
           showMessage(result.message || 'Email verified. You can sign in now.', 'login');
         } catch (error) {
           showMessage(error.message || 'Unable to verify email', 'verify');
