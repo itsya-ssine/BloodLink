@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bloodlink
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seeds/seed-all.sql:/docker-entrypoint-initdb.d/02-seeds.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  php:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_ENV: development
+      APP_DEBUG: "true"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: bloodlink
+      DB_USER: postgres
+      DB_PASS: postgres
+      PUBLIC_API_BASE_URL: http://localhost:8000/api
+      SESSION_NAME: bloodlink_session
+      SESSION_SECURE_COOKIE: "false"
+      SESSION_SAMESITE: Lax
+      APP_URL: http://localhost:8000
+      MAIL_FROM_ADDRESS: no-reply@bloodlink.local
+      MAIL_FROM_NAME: BloodLink
+      MAIL_LOG_ONLY: "true"
+      CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000"
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
