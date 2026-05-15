@@ -1,5 +1,3 @@
--- BloodLink relational schema (PostgreSQL)
--- This schema models all application data currently held in AppData.
 
 BEGIN;
 
@@ -25,6 +23,8 @@ CREATE TABLE achievements (
 -- -----------------------------
 CREATE TABLE users (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+  -- Identity
   first_name VARCHAR(80) NOT NULL,
   last_name VARCHAR(80) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -35,6 +35,8 @@ CREATE TABLE users (
   weight_kg NUMERIC(5,2),
   city VARCHAR(120),
   address TEXT,
+
+  -- Donor stats
   join_date DATE NOT NULL,
   total_donations INTEGER NOT NULL DEFAULT 0,
   last_donation_date DATE,
@@ -43,8 +45,26 @@ CREATE TABLE users (
   points INTEGER NOT NULL DEFAULT 0,
   donor_level VARCHAR(60),
   is_eligible BOOLEAN NOT NULL DEFAULT TRUE,
+
+  -- Auth
+  password_hash TEXT,
+  role VARCHAR(20) NOT NULL DEFAULT 'user',
+  email_verified_at TIMESTAMPTZ,
+  email_verification_token_hash TEXT,
+  email_verification_expires_at TIMESTAMPTZ,
+  password_reset_token_hash TEXT,
+  password_reset_expires_at TIMESTAMPTZ,
+  two_factor_secret TEXT,
+  two_factor_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  two_factor_recovery_codes JSONB NOT NULL DEFAULT '[]'::jsonb,
+  last_login_at TIMESTAMPTZ,
+  deleted_at TIMESTAMPTZ,
+
+  -- Timestamps
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  -- Constraints
   CONSTRAINT users_total_donations_chk CHECK (total_donations >= 0),
   CONSTRAINT users_saved_lives_chk CHECK (saved_lives >= 0),
   CONSTRAINT users_points_chk CHECK (points >= 0),
@@ -157,12 +177,23 @@ CREATE TABLE global_stats (
   )
 );
 
--- Helpful indexes
-CREATE INDEX idx_donations_user_date ON donations(donor_user_id, donated_at DESC);
-CREATE INDEX idx_blood_requests_urgency ON blood_requests(urgency_level, created_at DESC);
-CREATE INDEX idx_hospital_needs_blood_type ON hospital_blood_needs(blood_type_code);
+-- -----------------------------
+-- Indexes
+-- -----------------------------
 
--- Seed immutable blood type reference data
+-- Donor activity
+CREATE INDEX idx_donations_user_date        ON donations(donor_user_id, donated_at DESC);
+CREATE INDEX idx_blood_requests_urgency     ON blood_requests(urgency_level, created_at DESC);
+CREATE INDEX idx_hospital_needs_blood_type  ON hospital_blood_needs(blood_type_code);
+
+-- Auth
+CREATE INDEX idx_users_email_verified_at    ON users(email_verified_at);
+CREATE INDEX idx_users_role                 ON users(role);
+CREATE INDEX idx_users_deleted_at           ON users(deleted_at);
+
+-- -----------------------------
+-- Seed data
+-- -----------------------------
 INSERT INTO blood_types (code) VALUES
   ('A+'), ('A-'), ('B+'), ('B-'), ('O+'), ('O-'), ('AB+'), ('AB-')
 ON CONFLICT (code) DO NOTHING;
