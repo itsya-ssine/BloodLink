@@ -3,7 +3,7 @@
 // =========================================
 
 const BloodLinkApi = (() => {
-  const API_BASE = window.BLOODLINK_ENV?.API_BASE_URL || window.BLOODLINK_API_BASE || 'http://localhost:8080/api';
+  const API_BASE = window.BLOODLINK_ENV?.API_BASE_URL || window.BLOODLINK_API_BASE || 'http://localhost:8000/api';
   let csrfToken = null;
 
   async function request(path, options = {}) {
