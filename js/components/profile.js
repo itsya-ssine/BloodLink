@@ -7,9 +7,9 @@ const ProfileComponent = {
   render() {
     const u = AppData.currentUser;
     const age = new Date().getFullYear() - new Date(u.dateOfBirth).getFullYear();
-    const nextDate = new Date(u.nextEligible);
+    const nextDate = u.nextEligible ? new Date(u.nextEligible) : new Date();
     const today = new Date();
-    const daysUntil = Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24));
+    const daysUntil = nextDate && !isNaN(nextDate) ? Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24)) : 0;
     const eligibleNow = daysUntil <= 0;
 
     return `

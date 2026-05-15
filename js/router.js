@@ -37,10 +37,10 @@ const Router = {
   renderDashboard() {
     const u = AppData.currentUser;
     const g = AppData.globalStats;
-    const nextDate = new Date(u.nextEligible);
+    const nextDate = u.nextEligible ? new Date(u.nextEligible) : new Date();
     const today = new Date();
-    const eligible = nextDate <= today;
-    const daysLeft = Math.max(0, Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24)));
+    const eligible = nextDate && !isNaN(nextDate) ? nextDate <= today : false;
+    const daysLeft = nextDate && !isNaN(nextDate) ? Math.max(0, Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24))) : 0;
     const criticalRequests = AppData.requests.filter(r => r.urgency === 'critical');
     const nearbyHospitals = AppData.hospitals.slice(0, 3);
 

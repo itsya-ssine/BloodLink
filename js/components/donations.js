@@ -9,10 +9,10 @@ const DonationsComponent = {
   // ---- DONATE PAGE ----
   renderDonate() {
     const u = AppData.currentUser;
-    const nextDate = new Date(u.nextEligible);
+    const nextDate = u.nextEligible ? new Date(u.nextEligible) : new Date();
     const today = new Date();
-    const eligible = nextDate <= today;
-    const daysLeft = Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24));
+    const eligible = nextDate && !isNaN(nextDate) ? nextDate <= today : false;
+    const daysLeft = nextDate && !isNaN(nextDate) ? Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24)) : 0;
 
     if (!eligible) {
       return `
