@@ -6,6 +6,7 @@ const Router = {
 
   pages: {
     dashboard: () => Router.renderDashboard(),
+    admin:     () => AdminDashboardComponent.render(),
     profile:   () => ProfileComponent.render(),
     donate:    () => { DonationsComponent.currentStep = 1; return DonationsComponent.renderDonate(); },
     history:   () => DonationsComponent.renderHistory(),
@@ -29,6 +30,10 @@ const Router = {
     if (page === 'hospitals') {
       MapComponent.map = null;
       MapComponent.initMap();
+    }
+
+    if (page === 'admin' && window.AdminDashboardComponent) {
+      AdminDashboardComponent.init();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });

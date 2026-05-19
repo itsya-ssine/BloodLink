@@ -292,6 +292,10 @@ const BloodLinkApi = (() => {
     });
   }
 
+  async function getAdminUsers() {
+    return request('/admin/users');
+  }
+
   async function createRequest(payload) {
     return request('/requests', {
       method: 'POST',
@@ -323,6 +327,7 @@ const BloodLinkApi = (() => {
     confirmTwoFactor,
     disableTwoFactor,
     updateUser,
+    getAdminUsers,
     createRequest,
     createDonation,
   };

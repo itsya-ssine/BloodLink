@@ -139,6 +139,8 @@ const App = {
 
   renderAuthScreen(view = 'login', message = '') {
     this.authenticated = false;
+    window.AppData.currentUser = null;
+    this.syncAdminNavVisibility();
     document.body.classList.add('auth-mode');
     const main = document.getElementById('mainContent');
     if (!main || !window.AuthComponent) return;
@@ -208,7 +210,10 @@ const App = {
 
   updateSidebarUser() {
     const u = AppData.currentUser;
-    if (!u) return;
+    if (!u) {
+      this.syncAdminNavVisibility();
+      return;
+    }
     const nameEl   = document.getElementById('sidebarName');
     const avatarEl = document.getElementById('sidebarAvatar');
     const bloodEl  = document.getElementById('sidebarBlood');
@@ -218,6 +223,15 @@ const App = {
     if (avatarEl) avatarEl.textContent = u.initials;
     if (bloodEl)  bloodEl.textContent  = u.bloodType;
     if (mobileEl) mobileEl.textContent = u.initials;
+    this.syncAdminNavVisibility();
+  },
+
+  syncAdminNavVisibility() {
+    const adminNav = document.getElementById('adminNavItem');
+    if (!adminNav) return;
+
+    const isAdmin = AppData.currentUser?.role === 'admin';
+    adminNav.style.display = isAdmin ? '' : 'none';
   },
 
   showToast(message, type = 'info') {
