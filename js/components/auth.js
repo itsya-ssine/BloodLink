@@ -36,6 +36,31 @@ const AuthComponent = (() => {
     `;
   }
 
+  // Demo mode only: window.BLOODLINK_DEMO is defined by js/mock-api.js
+  function demoBox() {
+    const demo = window.BLOODLINK_DEMO;
+    if (!demo || !Array.isArray(demo.accounts)) return '';
+
+    const rows = demo.accounts.map(acc => `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(128,128,128,.25)">
+        <div style="min-width:0">
+          <div style="font-weight:700;color:var(--text-primary)">${acc.label}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--text-secondary);word-break:break-all">${acc.email}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--text-secondary)">${acc.password}</div>
+        </div>
+        <button type="button" class="auth-link" data-demo-email="${acc.email}" data-demo-password="${acc.password}" style="white-space:nowrap">Use</button>
+      </div>
+    `).join('');
+
+    return `
+      <div id="demoCredentials" style="margin-top:18px;padding:14px 16px;border:1px dashed rgba(128,128,128,.45);border-radius:12px">
+        <div style="font-weight:800;color:var(--text-primary);margin-bottom:2px"><i class="bi bi-flask-fill" aria-hidden="true"></i> Demo mode</div>
+        <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px">No real database. Sign in with one of these test accounts:</div>
+        ${rows}
+      </div>
+    `;
+  }
+
   function renderLogin(message = '') {
     return shell(`
       <form class="auth-form" id="authLoginForm">
@@ -57,6 +82,7 @@ const AuthComponent = (() => {
         <button type="button" class="auth-link" data-view="register">Create a new account</button>
         <button type="button" class="auth-link" data-view="forgot">Forgot password?</button>
       </div>
+      ${demoBox()}
     `, message);
   }
 
@@ -184,6 +210,16 @@ const AuthComponent = (() => {
     const showMessage = (message, targetView = currentView) => {
       switchView(targetView, message);
     };
+
+    document.querySelectorAll('[data-demo-email]').forEach(button => {
+      button.addEventListener('click', () => {
+        const form = document.getElementById('authLoginForm');
+        if (!form) return;
+        form.elements.email.value = button.dataset.demoEmail;
+        form.elements.password.value = button.dataset.demoPassword;
+        form.elements.password.focus();
+      });
+    });
 
     const loginForm = document.getElementById('authLoginForm');
     if (loginForm) {
